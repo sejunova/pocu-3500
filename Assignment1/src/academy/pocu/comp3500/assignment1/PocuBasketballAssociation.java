@@ -116,7 +116,7 @@ public final class PocuBasketballAssociation {
         if (left >= right) {
             return left;
         }
-        int mid = left + (right - 1) / 2;
+        int mid = left + (right - left) / 2;
         int midVal = supplier.apply(players[mid]);
         if (midVal == target) {
             return mid;
