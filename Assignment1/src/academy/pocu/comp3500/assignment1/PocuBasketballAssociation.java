@@ -46,6 +46,13 @@ public final class PocuBasketballAssociation {
     }
 
     public static Player findPlayerPointsPerGame(final Player[] players, int targetPoints) {
+        if (targetPoints < players[0].getPointsPerGame()) {
+            return players[0];
+        }
+        if (targetPoints >= players[players.length - 1].getPointsPerGame()) {
+            return players[players.length - 1];
+        }
+
         int idx = binarySearch(players, Player::getPointsPerGame, targetPoints, 0, players.length - 1);
         if (idx == players.length) {
             return players[idx - 1];
@@ -69,6 +76,13 @@ public final class PocuBasketballAssociation {
     }
 
     public static Player findPlayerShootingPercentage(final Player[] players, int targetShootingPercentage) {
+        if (targetShootingPercentage < players[0].getShootingPercentage()) {
+            return players[0];
+        }
+        if (targetShootingPercentage >= players[players.length - 1].getShootingPercentage()) {
+            return players[players.length - 1];
+        }
+
         int idx = binarySearch(players, Player::getShootingPercentage, targetShootingPercentage, 0, players.length - 1);
         if (idx == players.length) {
             return players[idx - 1];
