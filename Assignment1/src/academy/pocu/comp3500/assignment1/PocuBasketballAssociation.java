@@ -92,18 +92,18 @@ public final class PocuBasketballAssociation {
     }
 
     public static long find3ManDreamTeam(final Player[] players, final Player[] outPlayers, final Player[] scratch) {
-        return PlayerUtil.dfs(players, outPlayers, players.length, 0, 0, scratch, 3, 0);
+        return PlayerUtil.findMaxTeamWorkRecursive(players, outPlayers, players.length, 0, 0, scratch, 3, 0);
     }
 
     public static long findDreamTeam(final Player[] players, int k, final Player[] outPlayers, final Player[] scratch) {
-        return PlayerUtil.dfs(players, outPlayers, players.length, 0, 0, scratch, k, 0);
+        return PlayerUtil.findMaxTeamWorkRecursive(players, outPlayers, players.length, 0, 0, scratch, k, 0);
     }
 
     public static int findDreamTeamSize(final Player[] players, final Player[] scratch) {
         int dreamTeamSize = 0;
         long dreamTeamMaxScore = 0;
         for (int k = 1; k <= players.length; k++) {
-            long dreamTeamScore = PlayerUtil.dfs(players, scratch, players.length, 0, 0, scratch, k, 0);
+            long dreamTeamScore = PlayerUtil.findMaxTeamWorkRecursive(players, scratch, players.length, 0, 0, scratch, k, 0);
             if (dreamTeamScore >= dreamTeamMaxScore) {
                 dreamTeamMaxScore = dreamTeamScore;
                 dreamTeamSize = k;

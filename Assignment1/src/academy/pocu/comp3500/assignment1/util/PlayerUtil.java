@@ -21,7 +21,7 @@ public class PlayerUtil {
         }
     }
 
-    public static long dfs(final Player[] players, final Player[] outPlayers, int n, int start, int k, final Player[] scratch, int scratchLen, long maxTeamWorkScore) {
+    public static long findMaxTeamWorkRecursive(final Player[] players, final Player[] outPlayers, int n, int start, int k, final Player[] scratch, int scratchLen, long maxTeamWorkScore) {
         if (k == scratchLen) {
             long teamworkScore = getTeamWorkScore(scratch, scratchLen);
             if (teamworkScore > maxTeamWorkScore) {
@@ -33,7 +33,7 @@ public class PlayerUtil {
         for (int i = start; i < n; i++) {
             scratch[k] = players[i];
             k++;
-            maxTeamWorkScore = dfs(players, outPlayers, n, i + 1, k, scratch, scratchLen, maxTeamWorkScore);
+            maxTeamWorkScore = findMaxTeamWorkRecursive(players, outPlayers, n, i + 1, k, scratch, scratchLen, maxTeamWorkScore);
             k--;
         }
         return maxTeamWorkScore;
