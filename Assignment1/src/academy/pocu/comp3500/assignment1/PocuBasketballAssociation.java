@@ -1,7 +1,7 @@
 package academy.pocu.comp3500.assignment1;
 
-import academy.pocu.comp3500.assignment1.pba.Player;
 import academy.pocu.comp3500.assignment1.pba.GameStat;
+import academy.pocu.comp3500.assignment1.pba.Player;
 import academy.pocu.comp3500.assignment1.util.GameStatUtil;
 import academy.pocu.comp3500.assignment1.util.PlayerUtil;
 
@@ -102,9 +102,9 @@ public final class PocuBasketballAssociation {
     public static int findDreamTeamSize(final Player[] players, final Player[] scratch) {
         int dreamTeamSize = 0;
         long dreamTeamMaxScore = 0;
-        for (int k = 1 ; k <= players.length; k++) {
+        for (int k = 1; k <= players.length; k++) {
             long dreamTeamScore = PlayerUtil.dfs(players, scratch, players.length, 0, 0, scratch, k, 0);
-            if (dreamTeamScore > dreamTeamMaxScore) {
+            if (dreamTeamScore >= dreamTeamMaxScore) {
                 dreamTeamMaxScore = dreamTeamScore;
                 dreamTeamSize = k;
             }

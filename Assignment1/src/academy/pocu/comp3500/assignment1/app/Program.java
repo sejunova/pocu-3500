@@ -1,14 +1,14 @@
 package academy.pocu.comp3500.assignment1.app;
 
 import academy.pocu.comp3500.assignment1.PocuBasketballAssociation;
-import academy.pocu.comp3500.assignment1.pba.Player;
 import academy.pocu.comp3500.assignment1.pba.GameStat;
+import academy.pocu.comp3500.assignment1.pba.Player;
 
 public class Program {
 
     public static void main(String[] args) {
         {
-            GameStat[] gameStats = new GameStat[] {
+            GameStat[] gameStats = new GameStat[]{
                     new GameStat("Player 1", 1, 13, 5, 6, 10, 1),
                     new GameStat("Player 2", 2, 5, 2, 5, 0, 10),
                     new GameStat("Player 1", 3, 12, 6, 9, 8, 5),
@@ -22,7 +22,7 @@ public class Program {
                     new GameStat("Player 2", 4, 5, 1, 3, 1, 9),
             };
 
-            Player[] players = new Player[] {
+            Player[] players = new Player[]{
                     new Player(),
                     new Player(),
                     new Player(),
@@ -61,7 +61,7 @@ public class Program {
         }
 
         {
-            Player[] players = new Player[] {
+            Player[] players = new Player[]{
                     new Player("Player 1", 1, 5, 1, 60),
                     new Player("Player 2", 5, 2, 11, 31),
                     new Player("Player 3", 7, 4, 7, 44),
@@ -82,7 +82,7 @@ public class Program {
         }
 
         {
-            Player[] players = new Player[] {
+            Player[] players = new Player[]{
                     new Player("Player 4", 10, 10, 15, 25),
                     new Player("Player 2", 5, 2, 11, 31),
                     new Player("Player 3", 7, 4, 7, 44),
@@ -103,7 +103,7 @@ public class Program {
         }
 
         {
-            Player[] players = new Player[] {
+            Player[] players = new Player[]{
                     new Player("Player 2", 5, 12, 14, 50),
                     new Player("Player 6", 15, 2, 5, 40),
                     new Player("Player 5", 11, 1, 11, 54),
@@ -131,7 +131,7 @@ public class Program {
         }
 
         {
-            Player[] players = new Player[] {
+            Player[] players = new Player[]{
                     new Player("Player 2", 5, 5, 17, 50),
                     new Player("Player 6", 15, 4, 10, 40),
                     new Player("Player 5", 11, 3, 25, 54),
@@ -165,7 +165,7 @@ public class Program {
         }
 
         {
-            Player[] players = new Player[] {
+            Player[] players = new Player[]{
                     new Player("Player 1", 2, 5, 10, 78),
                     new Player("Player 2", 10, 4, 5, 66),
                     new Player("Player 3", 3, 3, 2, 22),

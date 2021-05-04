@@ -24,19 +24,19 @@ public class PlayerUtil {
     public static long dfs(final Player[] players, final Player[] outPlayers, int n, int start, int k, final Player[] scratch, int scratchLen, long maxTeamWorkScore) {
         if (k == scratchLen) {
             long teamworkScore = getTeamWorkScore(scratch, scratchLen);
-            if (teamworkScore >  maxTeamWorkScore) {
+            if (teamworkScore > maxTeamWorkScore) {
                 System.arraycopy(scratch, 0, outPlayers, 0, scratchLen);
             }
-            return Math.max(teamworkScore,  maxTeamWorkScore);
+            return Math.max(teamworkScore, maxTeamWorkScore);
         }
 
         for (int i = start; i < n; i++) {
             scratch[k] = players[i];
             k++;
-            maxTeamWorkScore = dfs(players, outPlayers, n, i + 1, k, scratch, scratchLen,  maxTeamWorkScore);
+            maxTeamWorkScore = dfs(players, outPlayers, n, i + 1, k, scratch, scratchLen, maxTeamWorkScore);
             k--;
         }
-        return  maxTeamWorkScore;
+        return maxTeamWorkScore;
     }
 
     private static long getTeamWorkScore(final Player[] scratch, int len) {
