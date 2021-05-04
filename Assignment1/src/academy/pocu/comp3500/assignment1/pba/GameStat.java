@@ -52,4 +52,11 @@ public final class GameStat {
     public int getGame() {
         return this.game;
     }
+
+    @Override
+    public String toString() {
+        return "GameStat{" +
+                "playerName='" + playerName +
+                '}';
+    }
 }

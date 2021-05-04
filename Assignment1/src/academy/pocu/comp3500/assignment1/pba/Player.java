@@ -60,4 +60,15 @@ public final class Player {
     public void setShootingPercentage(int shootingPercentage) {
         this.shootingPercentage = shootingPercentage;
     }
+
+    @Override
+    public String toString() {
+        return "Player{" +
+                "name='" + name + '\'' +
+                ", pointsPerGame=" + pointsPerGame +
+                ", assistsPerGame=" + assistsPerGame +
+                ", passesPerGame=" + passesPerGame +
+                ", shootingPercentage=" + shootingPercentage +
+                '}';
+    }
 }
