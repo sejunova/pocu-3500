@@ -3,7 +3,6 @@ package academy.pocu.comp3500.assignment1;
 import academy.pocu.comp3500.assignment1.pba.GameStat;
 import academy.pocu.comp3500.assignment1.pba.Player;
 
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.function.Function;
 
@@ -109,46 +108,56 @@ public final class PocuBasketballAssociation {
 
 
     private static long findDreamTeamHelper(final Player[] players, final Player[] outPlayers, final Player[] scratch, int k) {
-        sort(players, Comparator.comparing(Player::getAssistsPerGame));
+        sort(players, Comparator.comparing(Player::getAssistsPerGame).reversed());
         long maxScore = 0;
-        for (int i = 0; i < players.length - (k - 1); i++) {
-            Player pivot = players[i];
-            Arrays.fill(scratch, null);
-            for (int j = i + 1; j < players.length; j++) {
-                addPlayerToScratch(scratch, k, players[j]);
+        if (k == 1) {
+            for (Player player : players) {
+                long teamScore = player.getPassesPerGame() * player.getAssistsPerGame();
+                if (teamScore > maxScore) {
+                    maxScore = teamScore;
+                    if (outPlayers != null) {
+                        outPlayers[0] = player;
+                    }
+                }
             }
-            long curScore = pivot.getPassesPerGame();
-            for (int l = 0; l < k - 1; l++) {
-                curScore += scratch[l].getPassesPerGame();
+            return maxScore;
+        }
+
+        int minPass = Integer.MAX_VALUE;
+        int minPassIdx = -1;
+        long passSum = 0;
+        for (int i = 0; i < k; i++) {
+            scratch[i] = players[i];
+            passSum += players[i].getPassesPerGame();
+            if (minPass > players[i].getPassesPerGame()) {
+                minPass = players[i].getPassesPerGame();
+                minPassIdx = i;
             }
-            curScore *= pivot.getAssistsPerGame();
-            if (curScore >= maxScore) {
-                maxScore = curScore;
-                if (outPlayers != null) {
-                    System.arraycopy(scratch, 0, outPlayers, 0, scratch.length);
-                    outPlayers[k - 1] = pivot;
+        }
+        maxScore = passSum * players[k - 1].getAssistsPerGame();
+
+        for (int pivotIdx = k; pivotIdx < players.length; pivotIdx++) {
+            Player pivot = players[pivotIdx];
+            if (pivot.getPassesPerGame() > minPass) {
+                scratch[minPassIdx] = pivot;
+                passSum += (pivot.getPassesPerGame() - minPass);
+                long curScore = passSum * pivot.getAssistsPerGame();
+                if (curScore > maxScore) {
+                    maxScore = curScore;
+                    if (outPlayers != null) {
+                        System.arraycopy(scratch, 0, outPlayers, 0, k);
+                    }
+                }
+                minPass = pivot.getPassesPerGame();
+                for (int i = 0; i < k; i++) {
+                    if (minPass > scratch[i].getPassesPerGame()) {
+                        minPass = scratch[i].getPassesPerGame();
+                        minPassIdx = i;
+                    }
                 }
             }
         }
         return maxScore;
-    }
-
-    private static void addPlayerToScratch(final Player[] scratch, int n, Player player) {
-        int minPass = Integer.MAX_VALUE;
-        int minIdx = -1;
-        for (int i = 0; i < n - 1; i++) {
-            if (scratch[i] == null) {
-                scratch[i] = player;
-                return;
-            }
-            if (scratch[i].getPassesPerGame() < minPass) {
-                minPass = scratch[i].getPassesPerGame();
-                minIdx = i;
-            }
-        }
-        if (minPass < player.getPassesPerGame()) {
-            scratch[minIdx] = player;
-        }
     }
 
     private static int binarySearch(Player[] players, Function<Player, Integer> supplier, int target, int left, int right) {
@@ -165,16 +174,6 @@ public final class PocuBasketballAssociation {
         } else {
             return binarySearch(players, supplier, target, mid + 1, right);
         }
-    }
-
-    private static long getTeamWorkScore(final Player[] scratch, int len) {
-        int passSum = 0;
-        int minAssist = Integer.MAX_VALUE;
-        for (int i = 0; i < len; i++) {
-            passSum += scratch[i].getPassesPerGame();
-            minAssist = Math.min(minAssist, scratch[i].getAssistsPerGame());
-        }
-        return passSum * minAssist;
     }
 
     private static <T> void sort(T[] array, Comparator<T> comparator) {
