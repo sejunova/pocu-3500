@@ -3,6 +3,7 @@ package academy.pocu.comp3500.assignment1;
 import academy.pocu.comp3500.assignment1.pba.GameStat;
 import academy.pocu.comp3500.assignment1.pba.Player;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.function.Function;
 
@@ -85,24 +86,69 @@ public final class PocuBasketballAssociation {
     }
 
     public static long find3ManDreamTeam(final Player[] players, final Player[] outPlayers, final Player[] scratch) {
-        return findMaxTeamWorkRecursive(players, outPlayers, players.length, 0, 0, scratch, 3, 0);
+        return findDreamTeamHelper(players, outPlayers, scratch, 3);
     }
 
     public static long findDreamTeam(final Player[] players, int k, final Player[] outPlayers, final Player[] scratch) {
-        return findMaxTeamWorkRecursive(players, outPlayers, players.length, 0, 0, scratch, k, 0);
+        return findDreamTeamHelper(players, outPlayers, scratch, k);
     }
+
 
     public static int findDreamTeamSize(final Player[] players, final Player[] scratch) {
         int dreamTeamSize = 0;
         long dreamTeamMaxScore = 0;
         for (int k = 1; k <= players.length; k++) {
-            long dreamTeamScore = findMaxTeamWorkRecursive(players, scratch, players.length, 0, 0, scratch, k, 0);
+            long dreamTeamScore = findDreamTeamHelper(players, null, scratch, k);
             if (dreamTeamScore >= dreamTeamMaxScore) {
                 dreamTeamMaxScore = dreamTeamScore;
                 dreamTeamSize = k;
             }
         }
         return dreamTeamSize;
+    }
+
+
+    private static long findDreamTeamHelper(final Player[] players, final Player[] outPlayers, final Player[] scratch, int k) {
+        sort(players, Comparator.comparing(Player::getAssistsPerGame));
+        long maxScore = 0;
+        for (int i = 0; i < players.length - (k - 1); i++) {
+            Player pivot = players[i];
+            Arrays.fill(scratch, null);
+            for (int j = i + 1; j < players.length; j++) {
+                addPlayerToScratch(scratch, k, players[j]);
+            }
+            long curScore = pivot.getPassesPerGame();
+            for (int l = 0; l < k - 1; l++) {
+                curScore += scratch[l].getPassesPerGame();
+            }
+            curScore *= pivot.getAssistsPerGame();
+            if (curScore >= maxScore) {
+                maxScore = curScore;
+                if (outPlayers != null) {
+                    System.arraycopy(scratch, 0, outPlayers, 0, scratch.length);
+                    outPlayers[k - 1] = pivot;
+                }
+            }
+        }
+        return maxScore;
+    }
+
+    private static void addPlayerToScratch(final Player[] scratch, int n, Player player) {
+        int minPass = Integer.MAX_VALUE;
+        int minIdx = -1;
+        for (int i = 0; i < n - 1; i++) {
+            if (scratch[i] == null) {
+                scratch[i] = player;
+                return;
+            }
+            if (scratch[i].getPassesPerGame() < minPass) {
+                minPass = scratch[i].getPassesPerGame();
+                minIdx = i;
+            }
+        }
+        if (minPass < player.getPassesPerGame()) {
+            scratch[minIdx] = player;
+        }
     }
 
     private static int binarySearch(Player[] players, Function<Player, Integer> supplier, int target, int left, int right) {
@@ -119,24 +165,6 @@ public final class PocuBasketballAssociation {
         } else {
             return binarySearch(players, supplier, target, mid + 1, right);
         }
-    }
-
-    private static long findMaxTeamWorkRecursive(final Player[] players, final Player[] outPlayers, int n, int start, int k, final Player[] scratch, int scratchLen, long maxTeamWorkScore) {
-        if (k == scratchLen) {
-            long teamworkScore = getTeamWorkScore(scratch, scratchLen);
-            if (teamworkScore > maxTeamWorkScore) {
-                System.arraycopy(scratch, 0, outPlayers, 0, scratchLen);
-            }
-            return Math.max(teamworkScore, maxTeamWorkScore);
-        }
-
-        for (int i = start; i < n; i++) {
-            scratch[k] = players[i];
-            k++;
-            maxTeamWorkScore = findMaxTeamWorkRecursive(players, outPlayers, n, i + 1, k, scratch, scratchLen, maxTeamWorkScore);
-            k--;
-        }
-        return maxTeamWorkScore;
     }
 
     private static long getTeamWorkScore(final Player[] scratch, int len) {
