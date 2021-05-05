@@ -135,6 +135,9 @@ public final class PocuBasketballAssociation {
             }
         }
         maxScore = passSum * players[k - 1].getAssistsPerGame();
+        if (outPlayers != null) {
+            System.arraycopy(scratch, 0, outPlayers, 0, k);
+        }
 
         for (int pivotIdx = k; pivotIdx < players.length; pivotIdx++) {
             Player pivot = players[pivotIdx];
