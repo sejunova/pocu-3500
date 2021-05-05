@@ -3,6 +3,7 @@ package academy.pocu.comp3500.assignment1;
 import academy.pocu.comp3500.assignment1.pba.GameStat;
 import academy.pocu.comp3500.assignment1.pba.Player;
 
+import java.util.Comparator;
 import java.util.function.Function;
 
 public final class PocuBasketballAssociation {
@@ -10,7 +11,7 @@ public final class PocuBasketballAssociation {
     }
 
     public static void processGameStats(final GameStat[] gameStats, final Player[] outPlayers) {
-        sortGameStat(gameStats);
+        sort(gameStats, Comparator.comparing(GameStat::getPlayerName));
         int idx = 0;
         int count = 0;
         int goalAttempts = 0;
@@ -46,56 +47,34 @@ public final class PocuBasketballAssociation {
     }
 
     public static Player findPlayerPointsPerGame(final Player[] players, int targetPoints) {
-        if (targetPoints < players[0].getPointsPerGame()) {
-            return players[0];
-        }
-        if (targetPoints >= players[players.length - 1].getPointsPerGame()) {
-            return players[players.length - 1];
-        }
-
-        int idx = binarySearch(players, Player::getPointsPerGame, targetPoints, 0, players.length - 1);
-        if (idx == players.length) {
-            return players[idx - 1];
-        }
-        Player player = (idx != 0) ? players[--idx] : players[idx];
-        int diff = Math.abs(player.getPointsPerGame() - targetPoints);
-        while (true) {
-            idx++;
-            if (idx == players.length) {
-                break;
-            }
-            Player curPlayer = players[idx];
-            int curDiff = Math.abs(curPlayer.getPointsPerGame() - targetPoints);
-            if (curDiff > diff) {
-                break;
-            }
-            player = curPlayer;
-            diff = curDiff;
-        }
-        return player;
+        return findPlayer(players, targetPoints, Player::getPointsPerGame);
     }
 
     public static Player findPlayerShootingPercentage(final Player[] players, int targetShootingPercentage) {
-        if (targetShootingPercentage < players[0].getShootingPercentage()) {
+        return findPlayer(players, targetShootingPercentage, Player::getShootingPercentage);
+    }
+
+    private static Player findPlayer(final Player[] players, int target, Function<Player, Integer> supplier) {
+        if (target < supplier.apply(players[0])) {
             return players[0];
         }
-        if (targetShootingPercentage >= players[players.length - 1].getShootingPercentage()) {
+        if (target >= supplier.apply(players[players.length - 1])) {
             return players[players.length - 1];
         }
 
-        int idx = binarySearch(players, Player::getShootingPercentage, targetShootingPercentage, 0, players.length - 1);
+        int idx = binarySearch(players, supplier, target, 0, players.length - 1);
         if (idx == players.length) {
             return players[idx - 1];
         }
         Player player = (idx != 0) ? players[--idx] : players[idx];
-        int diff = Math.abs(player.getShootingPercentage() - targetShootingPercentage);
+        int diff = Math.abs(supplier.apply(player) - target);
         while (true) {
             idx++;
             if (idx == players.length) {
                 break;
             }
             Player curPlayer = players[idx];
-            int curDiff = Math.abs(curPlayer.getShootingPercentage() - targetShootingPercentage);
+            int curDiff = Math.abs(supplier.apply(curPlayer) - target);
             if (curDiff > diff) {
                 break;
             }
@@ -170,37 +149,37 @@ public final class PocuBasketballAssociation {
         return passSum * minAssist;
     }
 
-    private static void sortGameStat(GameStat[] gameStats) {
-        quickSortRecursive(gameStats, 0, gameStats.length - 1);
+    private static <T> void sort(T[] array, Comparator<T> comparator) {
+        quickSortRecursive(array, 0, array.length - 1, comparator);
     }
 
-    private static void quickSortRecursive(GameStat[] gameStats, int left, int right) {
+    private static <T> void quickSortRecursive(T[] array, int left, int right, Comparator<T> comparator) {
         if (left >= right) {
             return;
         }
-        int pivotPos = partition(gameStats, left, right);
+        int pivotPos = partition(array, left, right, comparator);
 
-        quickSortRecursive(gameStats, left, pivotPos - 1);
-        quickSortRecursive(gameStats, pivotPos + 1, right);
+        quickSortRecursive(array, left, pivotPos - 1, comparator);
+        quickSortRecursive(array, pivotPos + 1, right, comparator);
     }
 
-    private static int partition(GameStat[] gameStats, int left, int right) {
-        GameStat pivot = gameStats[right];
+    private static <T> int partition(T[] array, int left, int right, Comparator<T> comparator) {
+        T pivot = array[right];
         int i = (left - 1);
         for (int j = left; j < right; j++) {
-            if (gameStats[j].getPlayerName().compareTo(pivot.getPlayerName()) < 0) {
+            if (comparator.compare(array[j], pivot) < 0) {
                 ++i;
-                swap(gameStats, i, j);
+                swap(array, i, j);
             }
         }
         int pivotPos = i + 1;
-        swap(gameStats, pivotPos, right);
+        swap(array, pivotPos, right);
         return pivotPos;
     }
 
-    private static void swap(GameStat[] gameStats, int i, int j) {
-        GameStat temp = gameStats[i];
-        gameStats[i] = gameStats[j];
-        gameStats[j] = temp;
+    private static <T> void swap(T[] array, int i, int j) {
+        T temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
     }
 }
