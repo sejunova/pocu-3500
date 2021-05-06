@@ -85,22 +85,27 @@ public final class PocuBasketballAssociation {
     }
 
     public static long find3ManDreamTeam(final Player[] players, final Player[] outPlayers, final Player[] scratch) {
+        sort(players, Comparator.comparing(Player::getAssistsPerGame).reversed());
         return findDreamTeamHelper(players, outPlayers, scratch, 3);
     }
 
     public static long findDreamTeam(final Player[] players, int k, final Player[] outPlayers, final Player[] scratch) {
+        sort(players, Comparator.comparing(Player::getAssistsPerGame).reversed());
         return findDreamTeamHelper(players, outPlayers, scratch, k);
     }
 
 
     public static int findDreamTeamSize(final Player[] players, final Player[] scratch) {
+        sort(players, Comparator.comparing(Player::getAssistsPerGame).reversed());
         int dreamTeamSize = 0;
         long dreamTeamMaxScore = 0;
-        for (int k = 1; k <= players.length; k++) {
-            long dreamTeamScore = findDreamTeamHelper(players, null, scratch, k);
-            if (dreamTeamScore >= dreamTeamMaxScore) {
-                dreamTeamMaxScore = dreamTeamScore;
-                dreamTeamSize = k;
+        long dreamTeamPassSum = 0;
+        for (int i = 0; i < players.length; i++) {
+            dreamTeamPassSum += players[i].getPassesPerGame();
+            long curDreamTeamScore = dreamTeamPassSum * players[i].getAssistsPerGame();
+            if (curDreamTeamScore > dreamTeamMaxScore) {
+                dreamTeamMaxScore = curDreamTeamScore;
+                dreamTeamSize = i + 1;
             }
         }
         return dreamTeamSize;
@@ -108,7 +113,6 @@ public final class PocuBasketballAssociation {
 
 
     private static long findDreamTeamHelper(final Player[] players, final Player[] outPlayers, final Player[] scratch, int k) {
-        sort(players, Comparator.comparing(Player::getAssistsPerGame).reversed());
         long maxScore = 0;
         if (k == 1) {
             for (Player player : players) {
@@ -190,21 +194,23 @@ public final class PocuBasketballAssociation {
         int pivotPos = partition(array, left, right, comparator);
 
         quickSortRecursive(array, left, pivotPos - 1, comparator);
-        quickSortRecursive(array, pivotPos + 1, right, comparator);
+        quickSortRecursive(array, pivotPos, right, comparator);
     }
 
     private static <T> int partition(T[] array, int left, int right, Comparator<T> comparator) {
-        T pivot = array[right];
-        int i = (left - 1);
-        for (int j = left; j < right; j++) {
-            if (comparator.compare(array[j], pivot) < 0) {
-                ++i;
-                swap(array, i, j);
+        T pivot = array[left + (right - left) / 2];
+        while (left <= right) {
+            while (comparator.compare(array[left], pivot) < 0) {
+                left++;
+            }
+            while (comparator.compare(array[right], pivot) > 0) {
+                right--;
+            }
+            if (left <= right) {
+                swap(array, left++, right--);
             }
         }
-        int pivotPos = i + 1;
-        swap(array, pivotPos, right);
-        return pivotPos;
+        return left;
     }
 
     private static <T> void swap(T[] array, int i, int j) {
