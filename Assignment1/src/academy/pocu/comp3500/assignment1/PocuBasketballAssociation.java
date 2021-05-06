@@ -127,41 +127,26 @@ public final class PocuBasketballAssociation {
             return maxScore;
         }
 
-        int minPass = Integer.MAX_VALUE;
-        int minPassIdx = -1;
         long passSum = 0;
         for (int i = 0; i < k; i++) {
             scratch[i] = players[i];
             passSum += players[i].getPassesPerGame();
-            if (minPass > players[i].getPassesPerGame()) {
-                minPass = players[i].getPassesPerGame();
-                minPassIdx = i;
-            }
         }
         maxScore = passSum * players[k - 1].getAssistsPerGame();
-        if (outPlayers != null) {
-            System.arraycopy(scratch, 0, outPlayers, 0, k);
-        }
+        System.arraycopy(scratch, 0, outPlayers, 0, k);
+        buildHeap(scratch);
 
         for (int pivotIdx = k; pivotIdx < players.length; pivotIdx++) {
             Player pivot = players[pivotIdx];
-            if (pivot.getPassesPerGame() > minPass) {
-                scratch[minPassIdx] = pivot;
-                passSum += (pivot.getPassesPerGame() - minPass);
+            if (pivot.getPassesPerGame() > scratch[0].getPassesPerGame()) {
+                passSum += (pivot.getPassesPerGame() - scratch[0].getPassesPerGame());
+                scratch[0] = pivot;
                 long curScore = passSum * pivot.getAssistsPerGame();
                 if (curScore > maxScore) {
                     maxScore = curScore;
-                    if (outPlayers != null) {
-                        System.arraycopy(scratch, 0, outPlayers, 0, k);
-                    }
+                    System.arraycopy(scratch, 0, outPlayers, 0, k);
                 }
-                minPass = pivot.getPassesPerGame();
-                for (int i = 0; i < k; i++) {
-                    if (minPass > scratch[i].getPassesPerGame()) {
-                        minPass = scratch[i].getPassesPerGame();
-                        minPassIdx = i;
-                    }
-                }
+                heapify(scratch, 0);
             }
         }
         return maxScore;
@@ -217,5 +202,30 @@ public final class PocuBasketballAssociation {
         T temp = array[i];
         array[i] = array[j];
         array[j] = temp;
+    }
+
+    private static void heapify(Player[] array, int i) {
+        int size = array.length;
+        int smallest = i;
+        int left = 2 * i + 1;
+        int right = 2 * i + 2;
+
+        if (left < size && array[left].getPassesPerGame() < array[smallest].getPassesPerGame())
+            smallest = left;
+
+        if (right < size && array[right].getPassesPerGame() < array[smallest].getPassesPerGame())
+            smallest = right;
+
+        if (smallest != i) {
+            swap(array, i, smallest);
+            heapify(array, smallest);
+        }
+    }
+
+    private static void buildHeap(Player[] arr) {
+        int startIdx = (arr.length / 2) - 1;
+        for (int i = startIdx; i >= 0; i--) {
+            heapify(arr, i);
+        }
     }
 }
