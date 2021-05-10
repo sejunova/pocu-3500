@@ -3,8 +3,7 @@ package academy.pocu.comp3500.lab2;
 import academy.pocu.comp3500.lab2.datastructure.Node;
 
 public final class LinkedList {
-    private LinkedList() {
-    }
+    private LinkedList() { }
 
     public static Node append(final Node rootOrNull, final int data) {
         if (rootOrNull == null) {
@@ -28,9 +27,6 @@ public final class LinkedList {
     }
 
     public static Node insertAt(final Node rootOrNull, final int index, final int data) {
-        if (rootOrNull == null) {
-            return null;
-        }
         if (index == 0) {
             return prepend(rootOrNull, data);
         }
@@ -39,7 +35,7 @@ public final class LinkedList {
         Node prev = rootOrNull;
         Node next = rootOrNull.getNextOrNull();
         while (next != null) {
-            if (i == index) {
+            if (i >= index) {
                 break;
             }
             prev = next;
@@ -108,22 +104,25 @@ public final class LinkedList {
         if (rootOrNull == null) {
             return null;
         }
-
-        return reverseRecursive(null, rootOrNull);
+        return reverseRecursive(rootOrNull, null);
     }
 
-    private static Node reverseRecursive(final Node prev, final Node next) {
-        if (next == null) {
+
+    private static Node reverseRecursive(final Node node, final Node prev) {
+        if (node == null) {
             return prev;
         }
-        final Node root = reverseRecursive(next, next.getNextOrNull());
-        next.setNext(prev);
-        return root;
+        Node next = node.getNextOrNull();
+        node.setNext(prev);
+        return reverseRecursive(next, node);
     }
 
     public static Node interleaveOrNull(final Node root0OrNull, final Node root1OrNull) {
         if (root0OrNull == null) {
             return root1OrNull;
+        }
+        if (root1OrNull == null) {
+            return root0OrNull;
         }
         interleaveRecursive(root0OrNull, root1OrNull);
         return root0OrNull;
