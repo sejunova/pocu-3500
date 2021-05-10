@@ -55,11 +55,14 @@ public final class LinkedList {
         if (index < 0 || rootOrNull == null) {
             return rootOrNull;
         }
+        Node temp = rootOrNull;
+        Node cur;
         if (index == 0) {
-            return rootOrNull.getNextOrNull();
+            cur = rootOrNull.getNextOrNull();
+            rootOrNull.setNext(null);
+            return cur;
         }
 
-        Node temp = rootOrNull;
         for (int i = 0; i < index - 1; i++) {
             temp = temp.getNextOrNull();
             if (temp == null) {
@@ -71,7 +74,9 @@ public final class LinkedList {
             return rootOrNull;
         }
 
-        temp.setNext(temp.getNextOrNull().getNextOrNull());
+        cur = temp.getNextOrNull();
+        temp.setNext(cur.getNextOrNull());
+        cur.setNext(null);
         return rootOrNull;
     }
 
