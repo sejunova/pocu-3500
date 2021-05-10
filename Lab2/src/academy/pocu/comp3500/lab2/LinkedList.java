@@ -107,20 +107,17 @@ public final class LinkedList {
     }
 
     public static Node reverse(final Node rootOrNull) {
-        if (rootOrNull == null) {
-            return null;
-        }
-        return reverseRecursive(rootOrNull, null);
-    }
+        Node node = rootOrNull;
+        Node prev = null;
 
+        while (node != null) {
+            Node next = node.getNextOrNull();
+            node.setNext(prev);
 
-    private static Node reverseRecursive(final Node node, final Node prev) {
-        if (node == null) {
-            return prev;
+            prev = node;
+            node = next;
         }
-        Node next = node.getNextOrNull();
-        node.setNext(prev);
-        return reverseRecursive(next, node);
+        return prev;
     }
 
     public static Node interleaveOrNull(final Node root0OrNull, final Node root1OrNull) {
@@ -130,20 +127,26 @@ public final class LinkedList {
         if (root1OrNull == null) {
             return root0OrNull;
         }
-        interleaveRecursive(root0OrNull, root1OrNull);
-        return root0OrNull;
-    }
 
-    private static void interleaveRecursive(final Node root0OrNull, final Node root1OrNull) {
-        if (root0OrNull.getNextOrNull() == null) {
-            root0OrNull.setNext(root1OrNull);
-        } else if (root1OrNull.getNextOrNull() == null) {
-            root1OrNull.setNext(root0OrNull.getNextOrNull());
-            root0OrNull.setNext(root1OrNull);
-        } else {
-            interleaveRecursive(root0OrNull.getNextOrNull(), root1OrNull.getNextOrNull());
-            root1OrNull.setNext(root0OrNull.getNextOrNull());
-            root0OrNull.setNext(root1OrNull);
+        Node head0 = root0OrNull;
+        Node head1 = root1OrNull;
+
+        while (true) {
+            if (head0.getNextOrNull() == null) {
+                head0.setNext(head1);
+                break;
+            }
+            if (head1 == null) {
+                break;
+            }
+
+            Node head1Next = head1.getNextOrNull();
+            Node head0Next = head0.getNextOrNull();
+            head1.setNext(head0Next);
+            head0.setNext(head1);
+            head1 = head1Next;
+            head0 = head0Next;
         }
+        return root0OrNull;
     }
 }
