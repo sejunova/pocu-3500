@@ -37,10 +37,7 @@ public final class LinkedList {
         int i = 1;
         Node prev = rootOrNull;
         Node next = rootOrNull.getNextOrNull();
-        while (next != null) {
-            if (i >= index) {
-                break;
-            }
+        while (next != null && i < index) {
             prev = next;
             next = next.getNextOrNull();
             i++;
@@ -63,10 +60,7 @@ public final class LinkedList {
 
         int i = 1;
         Node prev = rootOrNull;
-        while (prev.getNextOrNull() != null) {
-            if (i == index) {
-                break;
-            }
+        while (prev.getNextOrNull() != null && i < index) {
             prev = prev.getNextOrNull();
             i++;
         }
