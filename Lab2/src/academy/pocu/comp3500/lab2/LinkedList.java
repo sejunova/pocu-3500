@@ -27,11 +27,11 @@ public final class LinkedList {
     }
 
     public static Node insertAt(final Node rootOrNull, final int index, final int data) {
-        if (index < 0) {
-            return rootOrNull;
-        }
         if (index == 0) {
             return prepend(rootOrNull, data);
+        }
+        if (index < 0 || rootOrNull == null) {
+            return rootOrNull;
         }
 
         int i = 1;
