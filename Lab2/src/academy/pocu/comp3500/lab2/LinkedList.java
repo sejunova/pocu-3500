@@ -27,6 +27,9 @@ public final class LinkedList {
     }
 
     public static Node insertAt(final Node rootOrNull, final int index, final int data) {
+        if (index < 0) {
+            return rootOrNull;
+        }
         if (index == 0) {
             return prepend(rootOrNull, data);
         }
@@ -51,8 +54,8 @@ public final class LinkedList {
     }
 
     public static Node removeAt(final Node rootOrNull, final int index) {
-        if (rootOrNull == null) {
-            return null;
+        if (index < 0 || rootOrNull == null) {
+            return rootOrNull;
         }
         if (index == 0) {
             return rootOrNull.getNextOrNull();
