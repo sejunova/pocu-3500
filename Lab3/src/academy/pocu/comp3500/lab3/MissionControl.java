@@ -43,16 +43,23 @@ public final class MissionControl {
     }
 
     private static int findMaxIndexRecursive(final int[] altitudes, int left, int right) {
-        int mid = left + (right - left) / 2;
-        if (altitudes[mid - 1] < altitudes[mid] && altitudes[mid] > altitudes[mid + 1]) {
-            return mid;
+        while (left < right) {
+            if (altitudes[left] > altitudes[left + 1]) {
+                return left;
+            }
+            left++;
         }
-
-        if (altitudes[mid] < altitudes[mid + 1]) {
-            return findMaxIndexRecursive(altitudes, mid + 1, right);
-        } else {
-            return findMaxIndexRecursive(altitudes, left, mid - 1);
-        }
+        return left;
+//        int mid = left + (right - left) / 2;
+//        if (altitudes[mid - 1] < altitudes[mid] && altitudes[mid] > altitudes[mid + 1]) {
+//            return mid;
+//        }
+//
+//        if (altitudes[mid] < altitudes[mid + 1]) {
+//            return findMaxIndexRecursive(altitudes, mid + 1, right);
+//        } else {
+//            return findMaxIndexRecursive(altitudes, left, mid - 1);
+//        }
     }
 
     private static void binarySearchRecursive(final int[] altitudes, int left, int right, int targetAltitude, Comparator<Integer> comparator, ArrayList<Integer> times) {
