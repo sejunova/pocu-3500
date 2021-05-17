@@ -27,16 +27,16 @@ public final class MissionControl {
         }
 
         if (altitudes[0] > altitudes[1]) {
-            binarySearchRecursive(altitudes, 0, altitudes.length - 1, targetAltitude, Comparator.reverseOrder(), answer);
+            binarySearch(altitudes, 0, altitudes.length - 1, targetAltitude, Comparator.reverseOrder(), answer);
         } else if (altitudes[altitudes.length - 2] < altitudes[altitudes.length - 1]) {
-            binarySearchRecursive(altitudes, 0, altitudes.length - 1, targetAltitude, Integer::compareTo, answer);
+            binarySearch(altitudes, 0, altitudes.length - 1, targetAltitude, Integer::compareTo, answer);
         } else {
             int maxIndex = findMaxIndex(altitudes);
             if (altitudes[maxIndex] == targetAltitude) {
                 answer.add(maxIndex);
             } else {
-                binarySearchRecursive(altitudes, 0, maxIndex - 1, targetAltitude, Integer::compareTo, answer);
-                binarySearchRecursive(altitudes, maxIndex + 1, altitudes.length - 1, targetAltitude, Comparator.reverseOrder(), answer);
+                binarySearch(altitudes, 0, maxIndex - 1, targetAltitude, Integer::compareTo, answer);
+                binarySearch(altitudes, maxIndex + 1, altitudes.length - 1, targetAltitude, Comparator.reverseOrder(), answer);
             }
         }
         return answer;
@@ -56,18 +56,19 @@ public final class MissionControl {
         return left;
     }
 
-    private static void binarySearchRecursive(final int[] altitudes, int left, int right, int targetAltitude, Comparator<Integer> comparator, ArrayList<Integer> times) {
-        if (right >= left) {
-            int mid = left + (right - left) / 2;
-
+    private static void binarySearch(final int[] altitudes, int left, int right, int targetAltitude, Comparator<Integer> comparator, ArrayList<Integer> times) {
+        int mid = left + (right - left) / 2;
+        while (left <= right) {
             if (altitudes[mid] == targetAltitude) {
                 times.add(mid);
                 return;
             }
             if (comparator.compare(altitudes[mid], targetAltitude) > 0) {
-                binarySearchRecursive(altitudes, left, mid - 1, targetAltitude, comparator, times);
+                right = mid - 1;
+            } else {
+                left = mid + 1;
             }
-            binarySearchRecursive(altitudes, mid + 1, right, targetAltitude, comparator, times);
+            mid = left + (right - left) / 2;
         }
     }
 }
