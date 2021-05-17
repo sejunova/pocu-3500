@@ -13,7 +13,7 @@ public final class MissionControl {
         } else if (altitudes[altitudes.length - 2] < altitudes[altitudes.length - 1]) {
             return altitudes.length - 1;
         } else {
-            return findMaxIndexRecursive(altitudes, 0, altitudes.length - 1);
+            return findMaxIndex(altitudes);
         }
     }
 
@@ -31,7 +31,7 @@ public final class MissionControl {
         } else if (altitudes[altitudes.length - 2] < altitudes[altitudes.length - 1]) {
             binarySearchRecursive(altitudes, 0, altitudes.length - 1, targetAltitude, Integer::compareTo, answer);
         } else {
-            int maxIndex = findMaxIndexRecursive(altitudes, 0, altitudes.length - 1);
+            int maxIndex = findMaxIndex(altitudes);
             if (altitudes[maxIndex] == targetAltitude) {
                 answer.add(maxIndex);
             } else {
@@ -42,24 +42,18 @@ public final class MissionControl {
         return answer;
     }
 
-    private static int findMaxIndexRecursive(final int[] altitudes, int left, int right) {
+    private static int findMaxIndex(final int[] altitudes) {
+        int left = 0;
+        int right = altitudes.length - 1;
         while (left < right) {
-            if (altitudes[left] > altitudes[left + 1]) {
-                return left;
+            int mid = left + (right - left) / 2;
+            if (altitudes[mid] < altitudes[mid + 1]) {
+                left = mid + 1;
+            } else {
+                right = mid;
             }
-            left++;
         }
         return left;
-//        int mid = left + (right - left) / 2;
-//        if (altitudes[mid - 1] < altitudes[mid] && altitudes[mid] > altitudes[mid + 1]) {
-//            return mid;
-//        }
-//
-//        if (altitudes[mid] < altitudes[mid + 1]) {
-//            return findMaxIndexRecursive(altitudes, mid + 1, right);
-//        } else {
-//            return findMaxIndexRecursive(altitudes, left, mid - 1);
-//        }
     }
 
     private static void binarySearchRecursive(final int[] altitudes, int left, int right, int targetAltitude, Comparator<Integer> comparator, ArrayList<Integer> times) {
