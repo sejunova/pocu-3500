@@ -24,6 +24,7 @@ public final class Logger {
                 }
             }
         }
+        writer.flush();
     }
 
     public static void printTo(final BufferedWriter writer, final String filter) throws IOException {
@@ -36,6 +37,7 @@ public final class Logger {
                 }
             }
         }
+        writer.flush();
     }
 
     public static void clear() {
