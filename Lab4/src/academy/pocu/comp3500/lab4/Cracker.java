@@ -15,7 +15,7 @@ public final class Cracker {
     public Cracker(User[] userTable, String email, String password) {
         this.userTable = userTable;
         String passwordHash = null;
-        for (User user: userTable) {
+        for (User user : userTable) {
             if (user.getEmail().equals(email)) {
                 passwordHash = user.getPasswordHash();
                 break;
@@ -55,9 +55,7 @@ public final class Cracker {
             MessageDigest md = MessageDigest.getInstance(algorithm);
             byte[] messageDigest = md.digest(password.getBytes());
             return Base64.getEncoder().encodeToString(messageDigest);
-        }
-
-        catch (NoSuchAlgorithmException e) {
+        } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
     }
