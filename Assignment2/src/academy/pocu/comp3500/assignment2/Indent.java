@@ -1,18 +1,18 @@
 package academy.pocu.comp3500.assignment2;
 
-import academy.pocu.comp3500.assignment2.datastructure.LinkedList;
+import academy.pocu.comp3500.assignment2.datastructure.ArrayList;
 
 //new String(new char[indentCount * 2]).replace('\0', ' ')
 public final class Indent {
     boolean discarded = false;
     Indent parent;
     String text;
-    LinkedList<LinkedList<Indent>> children = new LinkedList<>();
+    ArrayList<ArrayList<Indent>> children = new ArrayList<>();
 
     public Indent(Indent parent, String text) {
         this.parent = parent;
         this.text = text;
-        children.add(new LinkedList<>());
+        children.add(new ArrayList<>());
     }
 
     public void discard() {

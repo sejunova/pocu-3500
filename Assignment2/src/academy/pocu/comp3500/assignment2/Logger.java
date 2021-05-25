@@ -1,6 +1,6 @@
 package academy.pocu.comp3500.assignment2;
 
-import academy.pocu.comp3500.assignment2.datastructure.LinkedList;
+import academy.pocu.comp3500.assignment2.datastructure.ArrayList;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -10,18 +10,18 @@ public final class Logger {
     static Indent cur = root;
 
     public static void log(final String text) {
-        // Children의 마지막 LinkedList에 계속 추가
-        cur.children.getLast().add(new Indent(cur, text));
+        // Children의 마지막 ArrayList에 계속 추가
+        cur.children.get(cur.children.getSize() - 1).add(new Indent(cur, text));
     }
 
     public static void printTo(final BufferedWriter writer) throws IOException {
-        for (LinkedList<Indent> indents : root.children) {
+        for (ArrayList<Indent> indents : root.children) {
             printRecursive(writer, indents, 0, null);
         }
         writer.flush();
     }
 
-    public static void printRecursive(final BufferedWriter writer, LinkedList<Indent> indents, int indentCount, String filter) throws IOException {
+    public static void printRecursive(final BufferedWriter writer, ArrayList<Indent> indents, int indentCount, String filter) throws IOException {
         for (Indent indent : indents) {
             if (indent.discarded) {
                 break;
@@ -36,14 +36,14 @@ public final class Logger {
                     }
                 }
             }
-            for (LinkedList<Indent> indentsList : indent.children) {
+            for (ArrayList<Indent> indentsList : indent.children) {
                 printRecursive(writer, indentsList, indentCount + 1, filter);
             }
         }
     }
 
     public static void printTo(final BufferedWriter writer, final String filter) throws IOException {
-        for (LinkedList<Indent> indents : root.children) {
+        for (ArrayList<Indent> indents : root.children) {
             printRecursive(writer, indents, 0, filter);
         }
         writer.flush();
@@ -55,15 +55,15 @@ public final class Logger {
     }
 
     public static Indent indent() {
-        if (cur.children.getLast().getSize() == 0) {
-            cur.children.getLast().add(new Indent(cur, null));
+        if (cur.children.get(cur.children.getSize() - 1).getSize() == 0) {
+            cur.children.get(cur.children.getSize() - 1).add(new Indent(cur, null));
         }
-        cur = cur.children.getLast().getLast();
-        if (cur.children.getLast().getSize() != 0) {
-            cur.children.add(new LinkedList<>());
+        cur = cur.children.get(cur.children.getSize() - 1).get(cur.children.get(cur.children.getSize() - 1).getSize() - 1);
+        if (cur.children.get(cur.children.getSize() - 1).getSize() != 0) {
+            cur.children.add(new ArrayList<>());
         }
         Indent indent = new Indent(cur, null);
-        cur.children.getLast().add(indent);
+        cur.children.get(cur.children.getSize() - 1).add(indent);
         return indent;
     }
 
