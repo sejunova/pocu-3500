@@ -7,20 +7,36 @@ import academy.pocu.comp3500.assignment2.datastructure.Sort;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 
 import static academy.pocu.comp3500.assignment2.Logger.log;
 
 public class Program {
 
     public static void main(String[] args) throws IOException {
+//        {
+//            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(System.out));
+//
+//
+//            Logger.indent();
+//            {
+//                log("Log1");
+//            }
+//            Logger.unindent();
+//
+//            log("Log2");
+//            Logger.printTo(writer);
+//        }
+
         {
-            BufferedWriter writer = new BufferedWriter(new FileWriter("mylog1.log"));
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(System.out));
 
             log("hello");
             log("world");
             log("this is logging at the top level");
 
             Logger.indent();
+
             {
                 log("using indent, you can indent to organize your logs");
                 log("call unindent() to decrease the indentation level");
@@ -37,7 +53,7 @@ public class Program {
             }
             Logger.unindent();
 
-            Logger.indent();
+            indent = Logger.indent();
             {
                 log("this won't be discarded");
                 log("it's true!");
@@ -49,6 +65,7 @@ public class Program {
             log("back to the top level!");
             log("and let's print the logs");
 
+            indent.discard(); // 내가 임의로 추가. this won't be ~ and let's 까지 지워져야함
             Logger.printTo(writer);
 
             Logger.clear();
@@ -63,21 +80,21 @@ public class Program {
 
         Logger.clear();
 
-        {
-            final BufferedWriter writer1 = new BufferedWriter(new FileWriter("quicksort1.log"));
-            final BufferedWriter writer2 = new BufferedWriter(new FileWriter("quicksort2.log"));
-
-            int[] nums = new int[]{30, 10, 80, 90, 50, 70, 40};
-
-            Sort.quickSort(nums);
-
-            Logger.printTo(writer1);
-
-            Logger.printTo(writer2, "90");
-
-            writer1.close();
-            writer2.close();
-        }
+//        {
+//            final BufferedWriter writer1 = new BufferedWriter(new FileWriter("quicksort1.log"));
+//            final BufferedWriter writer2 = new BufferedWriter(new FileWriter("quicksort2.log"));
+//
+//            int[] nums = new int[]{30, 10, 80, 90, 50, 70, 40};
+//
+//            Sort.quickSort(nums);
+//
+//            Logger.printTo(writer1);
+//
+//            Logger.printTo(writer2, "90");
+//
+//            writer1.close();
+//            writer2.close();
+//        }
     }
 
     private static void doMagic() {
