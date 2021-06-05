@@ -10,7 +10,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.Arrays;
 import java.util.HashMap;
 
 public class Bank {
@@ -31,12 +30,18 @@ public class Bank {
 
     public boolean transfer(final byte[] from, byte[] to, final long amount, final byte[] signature) {
         // 선행조건
-        if (!pubKeyAmountMap.containsKey(from) || !pubKeyAmountMap.containsKey(to)) {
+        if (!pubKeyAmountMap.containsKey(from)) {
             return false;
         }
 
         long senderAmount = pubKeyAmountMap.get(from);
-        long receiverAmount = pubKeyAmountMap.get(to);
+        long receiverAmount;
+        if (pubKeyAmountMap.containsKey(to)) {
+            receiverAmount = pubKeyAmountMap.get(to);
+        } else {
+            pubKeyAmountMap.put(to, 0L);
+            receiverAmount = 0;
+        }
         if (senderAmount <= 0 || amount <= 0) {
             return false;
         }
@@ -52,14 +57,14 @@ public class Bank {
         // 복호화 시작
         byte[] message = new byte[from.length + to.length + Long.BYTES];
         int i = 0;
-        for (byte b: from) {
+        for (byte b : from) {
             message[i++] = b;
         }
-        for (byte b: to) {
+        for (byte b : to) {
             message[i++] = b;
         }
 
-        for (byte b: longToBytes(amount)) {
+        for (byte b : longToBytes(amount)) {
             message[i++] = b;
         }
 
@@ -70,12 +75,14 @@ public class Bank {
             PublicKey pubKey = KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(from));
 
             byte[] signatureDecrypted = decryptWithPublicKey(signature, pubKey);
-            if (!Arrays.equals(signatureDecrypted, messageHashed)) {
-                return false;
+            for (int k = 0; k < signatureDecrypted.length; k++) {
+                if (signatureDecrypted[k] != messageHashed[k]) {
+                    return false;
+                }
             }
 
             pubKeyAmountMap.put(from, senderAmount - amount);
-            pubKeyAmountMap.put(to, receiverAmount+ amount);
+            pubKeyAmountMap.put(to, receiverAmount + amount);
             return true;
         } catch (Exception e) {
             return false;
@@ -85,7 +92,7 @@ public class Bank {
     private static byte[] longToBytes(long l) {
         byte[] result = new byte[Long.BYTES];
         for (int i = Long.BYTES - 1; i >= 0; i--) {
-            result[i] = (byte)(l & 0xFF);
+            result[i] = (byte) (l & 0xFF);
             l >>= Byte.SIZE;
         }
         return result;
