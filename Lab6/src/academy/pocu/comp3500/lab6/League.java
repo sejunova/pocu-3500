@@ -12,7 +12,7 @@ public class League {
     public League(final Player[] players, boolean sorted) {
         if (players != null) {
             if (sorted) {
-                root = BinarySearchTree.sortedArrayToBST(root, players);
+                root = BinarySearchTree.sortedArrayToBST(null, players);
             } else {
                 for (Player player : players) {
                     root = BinarySearchTree.insert(root, player);

@@ -114,15 +114,15 @@ public class BinarySearchTree {
         traverse(root.right, players);
     }
 
-    public static TreeNode sortedArrayToBST(Player[] nums) {
-        if (nums.length == 0) {
+    public static TreeNode sortedArrayToBST(TreeNode root, Player[] players) {
+        if (players.length == 0) {
             return null;
         }
         Stack<MyTreeNode> rootStack = new Stack<>();
         int start = 0;
-        int end = nums.length;
+        int end = players.length;
         int mid = (start + end) / 2;
-        TreeNode root = new TreeNode(nums[mid]);
+        root = insert(root, players[mid]);
         TreeNode curRoot = root;
         rootStack.push(new MyTreeNode(root, start, end));
         while (end - start > 1 || !rootStack.isEmpty()) {
@@ -131,8 +131,7 @@ public class BinarySearchTree {
                 mid = (start + end) / 2;
                 end = mid;
                 mid = (start + end) / 2;
-                curRoot.left = new TreeNode(nums[mid]);
-                curRoot = curRoot.left;
+                root = insert(root, players[mid]);
                 rootStack.push(new MyTreeNode(curRoot, start, end));
             }
 
@@ -144,8 +143,7 @@ public class BinarySearchTree {
             curRoot = myNode.root;
             if (start < end) {
                 mid = (start + end) / 2;
-                curRoot.right = new TreeNode(nums[mid]);
-                curRoot = curRoot.right;
+                root = insert(root, players[mid]);
                 rootStack.push(new MyTreeNode(curRoot, start, end));
             }
 
