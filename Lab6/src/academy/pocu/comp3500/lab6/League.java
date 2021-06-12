@@ -10,40 +10,9 @@ public class League {
     }
 
     public League(final Player[] players, boolean sorted) {
-        if (players != null && players.length > 0) {
-            if (sorted && players.length > 2) {
-                int mid = players.length / 2;
-                root = BinarySearchTree.insert(root, players[mid]);
-
-                int depth = 1;
-                boolean leftEndReach = false;
-                boolean rightEndReach = false;
-
-                int left = mid - 1;
-                int right = mid + 1;
-
-                while (!leftEndReach || !rightEndReach) {
-                    if (!leftEndReach) {
-                        for (int i = 0; i < depth; i++) {
-                            root = BinarySearchTree.insert(root, players[left--]);
-                            if (left == -1) {
-                                leftEndReach = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    if (!rightEndReach) {
-                        for (int i = 0; i < depth; i++) {
-                            root = BinarySearchTree.insert(root, players[right++]);
-                            if (right == players.length) {
-                                rightEndReach = true;
-                                break;
-                            }
-                        }
-                    }
-                    depth *= 2;
-                }
+        if (players != null) {
+            if (sorted) {
+                root = BinarySearchTree.sortedArrayToBST(players);
             } else {
                 for (Player player : players) {
                     root = BinarySearchTree.insert(root, player);

@@ -2,6 +2,9 @@ package academy.pocu.comp3500.lab6;
 
 import academy.pocu.comp3500.lab6.leagueofpocu.Player;
 
+import java.util.List;
+import java.util.Stack;
+
 public class BinarySearchTree {
     public static TreeNode insert(TreeNode root, Player val) {
         if (root == null) {
@@ -99,6 +102,66 @@ public class BinarySearchTree {
         if (c.c < players.length) {
             players[c.c++] = root.val;
             getBottomHelper(root.right, players, c);
+        }
+    }
+
+    public static void traverse(TreeNode root, List<Player> players) {
+        if (root == null) {
+            return;
+        }
+        traverse(root.left, players);
+        players.add(root.val);
+        traverse(root.right, players);
+    }
+
+    public static TreeNode sortedArrayToBST(Player[] nums) {
+        if (nums.length == 0) {
+            return null;
+        }
+        Stack<MyTreeNode> rootStack = new Stack<>();
+        int start = 0;
+        int end = nums.length;
+        int mid = (start + end) / 2;
+        TreeNode root = new TreeNode(nums[mid]);
+        TreeNode curRoot = root;
+        rootStack.push(new MyTreeNode(root, start, end));
+        while (end - start > 1 || !rootStack.isEmpty()) {
+            // left 탐색 끝까지
+            while (end - start > 1) {
+                mid = (start + end) / 2;
+                end = mid;
+                mid = (start + end) / 2;
+                curRoot.left = new TreeNode(nums[mid]);
+                curRoot = curRoot.left;
+                rootStack.push(new MyTreeNode(curRoot, start, end));
+            }
+
+            MyTreeNode myNode = rootStack.pop();
+            start = myNode.start;
+            end = myNode.end;
+            mid = (start + end) / 2;
+            start = mid + 1;
+            curRoot = myNode.root;
+            if (start < end) {
+                mid = (start + end) / 2;
+                curRoot.right = new TreeNode(nums[mid]);
+                curRoot = curRoot.right;
+                rootStack.push(new MyTreeNode(curRoot, start, end));
+            }
+
+        }
+        return root;
+    }
+
+    private static class MyTreeNode {
+        TreeNode root;
+        int start;
+        int end;
+
+        MyTreeNode(TreeNode r, int s, int e) {
+            this.root = r;
+            this.start = s;
+            this.end = e;
         }
     }
 }
