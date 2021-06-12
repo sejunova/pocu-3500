@@ -15,7 +15,7 @@ public class League {
                 root = BinarySearchTree.sortedArrayToBST(null, players);
             } else {
                 for (Player player : players) {
-                    root = BinarySearchTree.insert(root, player);
+                    root = BinarySearchTree.insertAndReturnRoot(root, player);
                 }
             }
             size += players.length;
@@ -47,7 +47,7 @@ public class League {
             return false;
         }
         if (size == 0) {
-            root = BinarySearchTree.insert(root, player);
+            root = BinarySearchTree.insertAndReturnRoot(root, player);
             size++;
             return true;
         }
@@ -56,7 +56,7 @@ public class League {
         if (BinarySearchTree.search(root, player) != null) {
             return false;
         }
-        root = BinarySearchTree.insert(root, player);
+        root = BinarySearchTree.insertAndReturnRoot(root, player);
         size++;
         return true;
     }

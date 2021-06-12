@@ -6,17 +6,29 @@ import java.util.List;
 import java.util.Stack;
 
 public class BinarySearchTree {
+    public static TreeNode insertAndReturnRoot(TreeNode root, Player val) {
+        if (root == null) {
+            return new TreeNode(val);
+        }
+
+        if (val.getRating() < root.val.getRating()) {
+            root.left = insertAndReturnRoot(root.left, val);
+        } else {
+            root.right = insertAndReturnRoot(root.right, val);
+        }
+        return root;
+    }
+
     public static TreeNode insert(TreeNode root, Player val) {
         if (root == null) {
             return new TreeNode(val);
         }
 
         if (val.getRating() < root.val.getRating()) {
-            root.left = insert(root.left, val);
+            return insert(root.left, val);
         } else {
-            root.right = insert(root.right, val);
+            return insert(root.right, val);
         }
-        return root;
     }
 
     public static TreeNode delete(TreeNode root, Player key) {
@@ -122,7 +134,7 @@ public class BinarySearchTree {
         int start = 0;
         int end = players.length;
         int mid = (start + end) / 2;
-        root = insert(root, players[mid]);
+        root = insertAndReturnRoot(root, players[mid]);
         TreeNode curRoot = root;
         rootStack.push(new MyTreeNode(root, start, end));
         while (end - start > 1 || !rootStack.isEmpty()) {
@@ -131,7 +143,7 @@ public class BinarySearchTree {
                 mid = (start + end) / 2;
                 end = mid;
                 mid = (start + end) / 2;
-                root = insert(root, players[mid]);
+                curRoot = insertAndReturnRoot(curRoot, players[mid]);
                 rootStack.push(new MyTreeNode(curRoot, start, end));
             }
 
@@ -143,7 +155,7 @@ public class BinarySearchTree {
             curRoot = myNode.root;
             if (start < end) {
                 mid = (start + end) / 2;
-                root = insert(root, players[mid]);
+                curRoot = insertAndReturnRoot(curRoot, players[mid]);
                 rootStack.push(new MyTreeNode(curRoot, start, end));
             }
 
