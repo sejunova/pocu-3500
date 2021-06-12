@@ -3,8 +3,7 @@ package academy.pocu.comp3500.lab6;
 import academy.pocu.comp3500.lab6.leagueofpocu.Player;
 
 public class ClosestPlayer {
-    Player left;
-    Player right;
+    Player cp;
     int baseRating;
 
     ClosestPlayer(int baseRating) {
@@ -12,26 +11,14 @@ public class ClosestPlayer {
     }
 
     void updateNodes(Player player) {
-        if (player.getRating() < baseRating) {
-            if (left == null || player.getRating() > left.getRating()) {
-                left = player;
-            }
+        if (cp == null) {
+            cp = player;
         } else {
-            if (right == null || player.getRating() < right.getRating()) {
-                right = player;
+            int curDiff = Math.abs(baseRating - cp.getRating());
+            int diff = Math.abs(baseRating - player.getRating());
+            if (diff < curDiff || (diff == curDiff && player.getRating() > cp.getRating())) {
+                cp = player;
             }
-        }
-    }
-
-    Player getClosestPlayer() {
-        if (left == null) {
-            return right;
-        } else if (right == null) {
-            return left;
-        } else {
-            int rightDiff = right.getRating() - baseRating;
-            int leftDiff = baseRating - left.getRating();
-            return (rightDiff <= leftDiff) ? right : left;
         }
     }
 }

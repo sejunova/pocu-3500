@@ -57,10 +57,22 @@ public class BinarySearchTree {
             return;
         }
 
-        if (root.val.getId() != player.getId()) {
+        if (root.val.getId() == player.getId()) {
+            if (root.left != null) {
+                //pre-order successor
+                TreeNode s = root.left;
+                while (s.right != null) {
+                    s = s.right;
+                }
+                closestPlayer.updateNodes(s.val);
+            }
+        } else {
             closestPlayer.updateNodes(root.val);
         }
 
+        if (closestPlayer.cp != null && closestPlayer.cp.getRating() == player.getRating()) {
+            return;
+        }
         if (player.getRating() < root.val.getRating()) {
             findClosest(root.left, player, closestPlayer);
         } else {
