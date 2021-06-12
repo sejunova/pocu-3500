@@ -10,29 +10,56 @@ public class League {
     }
 
     public League(final Player[] players, boolean sorted) {
-        if (sorted) {
-            int mid = players.length / 2;
-            int left = mid - 1;
-            int right = mid;
-            while (0 <= left && right < players.length) {
-                root = BinarySearchTree.insert(root, players[left--]);
-                root = BinarySearchTree.insert(root, players[right++]);
+        if (players != null && players.length > 0) {
+            if (sorted || players.length > 2) {
+                int mid = players.length / 2;
+                root = BinarySearchTree.insert(root, players[mid]);
+
+                int depth = 1;
+                boolean leftEndReach = false;
+                boolean rightEndReach = false;
+
+                int left = mid - 1;
+                int right = mid + 1;
+
+                while (!leftEndReach || !rightEndReach) {
+                    if (!leftEndReach) {
+                        for (int i = 0; i < depth; i++) {
+                            root = BinarySearchTree.insert(root, players[left--]);
+                            if (left == -1) {
+                                leftEndReach = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (!rightEndReach) {
+                        for (int i = 0; i < depth; i++) {
+                            root = BinarySearchTree.insert(root, players[right++]);
+                            if (right == players.length) {
+                                rightEndReach = true;
+                                break;
+                            }
+                        }
+                    }
+                    depth *= 2;
+                }
+                if (right < players.length) {
+                    root = BinarySearchTree.insert(root, players[right]);
+                }
+            } else {
+                for (Player player : players) {
+                    root = BinarySearchTree.insert(root, player);
+                }
             }
-            if (right < players.length) {
-                root = BinarySearchTree.insert(root, players[right]);
-            }
-        } else {
-            for (Player player : players) {
-                root = BinarySearchTree.insert(root, player);
-            }
+            size += players.length;
         }
-        size += players.length;
     }
 
     public Player findMatchOrNull(final Player player) {
         ClosestPlayer closestPlayer = new ClosestPlayer(player.getRating());
         BinarySearchTree.findClosest(root, player, closestPlayer);
-        return closestPlayer.getClosestPlayer();
+        return closestPlayer.cp;
     }
 
     public Player[] getTop(final int count) {
