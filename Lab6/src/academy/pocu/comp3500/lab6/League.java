@@ -11,7 +11,7 @@ public class League {
 
     public League(final Player[] players, boolean sorted) {
         if (players != null && players.length > 0) {
-            if (sorted || players.length > 2) {
+            if (sorted && players.length > 2) {
                 int mid = players.length / 2;
                 root = BinarySearchTree.insert(root, players[mid]);
 
@@ -43,9 +43,6 @@ public class League {
                         }
                     }
                     depth *= 2;
-                }
-                if (right < players.length) {
-                    root = BinarySearchTree.insert(root, players[right]);
                 }
             } else {
                 for (Player player : players) {
