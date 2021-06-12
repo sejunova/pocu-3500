@@ -33,20 +33,23 @@ public class League {
     }
 
     public Player[] getTop(final int count) {
-        Player[] players = new Player[Math.min(size, count)];
+        Player[] players = new Player[Math.min(size, Math.max(count, 0))];
 
         BinarySearchTree.getTopHelper(root, players, new Count());
         return players;
     }
 
     public Player[] getBottom(final int count) {
-        Player[] players = new Player[Math.min(size, count)];
+        Player[] players = new Player[Math.min(size, Math.max(count, 0))];
 
         BinarySearchTree.getBottomHelper(root, players, new Count());
         return players;
     }
 
     public boolean join(final Player player) {
+        if (player == null) {
+            return false;
+        }
         // 이미 선수가 경기장에 있는 경우
         if (BinarySearchTree.search(root, player) != null) {
             return false;
@@ -57,6 +60,9 @@ public class League {
     }
 
     public boolean leave(final Player player) {
+        if (player == null) {
+            return false;
+        }
         // 이미 선수가 경기장에 없는 경우
         if (BinarySearchTree.search(root, player) == null) {
             return false;
