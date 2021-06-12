@@ -50,24 +50,31 @@ public class League {
         if (player == null) {
             return false;
         }
+        if (size == 0) {
+            root = BinarySearchTree.insert(root, player);
+            size++;
+            return true;
+        }
+
         // 이미 선수가 경기장에 있는 경우
         if (BinarySearchTree.search(root, player) != null) {
             return false;
         }
-        BinarySearchTree.insert(root, player);
+        root = BinarySearchTree.insert(root, player);
         size++;
         return true;
     }
 
     public boolean leave(final Player player) {
-        if (player == null) {
+        if (player == null || size == 0) {
             return false;
         }
+
         // 이미 선수가 경기장에 없는 경우
         if (BinarySearchTree.search(root, player) == null) {
             return false;
         }
-        BinarySearchTree.delete(root, player);
+        root = BinarySearchTree.delete(root, player);
         size--;
         return true;
     }
