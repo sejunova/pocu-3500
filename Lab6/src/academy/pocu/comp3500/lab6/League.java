@@ -3,7 +3,7 @@ package academy.pocu.comp3500.lab6;
 import academy.pocu.comp3500.lab6.leagueofpocu.Player;
 
 public class League {
-    private TreeNode root;
+    public TreeNode root;
     private int size;
 
     public League() {
@@ -12,7 +12,7 @@ public class League {
     public League(final Player[] players, boolean sorted) {
         if (players != null) {
             if (sorted) {
-                root = BinarySearchTree.sortedArrayToBST(players);
+                root = BinarySearchTree.sortedArrayToBST(root, players);
             } else {
                 for (Player player : players) {
                     root = BinarySearchTree.insert(root, player);
