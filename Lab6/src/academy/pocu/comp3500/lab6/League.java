@@ -18,6 +18,9 @@ public class League {
                 root = BinarySearchTree.insert(root, players[left--]);
                 root = BinarySearchTree.insert(root, players[right++]);
             }
+            if (right < players.length) {
+                root = BinarySearchTree.insert(root, players[right]);
+            }
         } else {
             for (Player player : players) {
                 root = BinarySearchTree.insert(root, player);
