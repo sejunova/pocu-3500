@@ -143,8 +143,28 @@ public class BinarySearchTree {
                 mid = (start + end) / 2;
                 end = mid;
                 mid = (start + end) / 2;
-                curRoot = insertAndReturnRoot(curRoot, players[mid]);
-                rootStack.push(new MyTreeNode(curRoot, start, end));
+
+                TreeNode newRoot = new TreeNode(players[mid]);
+                if (players[mid].getRating() < curRoot.val.getRating()) {
+                    while (curRoot.left != null) {
+                        curRoot = curRoot.left;
+                    }
+                    if (players[mid].getRating() < curRoot.val.getRating()) {
+                        curRoot.left = newRoot;
+                    } else {
+                        curRoot.right = newRoot;
+                    }
+                } else {
+                    while (curRoot.right != null) {
+                        curRoot = curRoot.right;
+                    }
+                    if (players[mid].getRating() < curRoot.val.getRating()) {
+                        curRoot.left = newRoot;
+                    } else {
+                        curRoot.right = newRoot;
+                    }
+                }
+                rootStack.push(new MyTreeNode(newRoot, start, end));
             }
 
             MyTreeNode myNode = rootStack.pop();
@@ -155,8 +175,27 @@ public class BinarySearchTree {
             curRoot = myNode.root;
             if (start < end) {
                 mid = (start + end) / 2;
-                curRoot = insertAndReturnRoot(curRoot, players[mid]);
-                rootStack.push(new MyTreeNode(curRoot, start, end));
+                TreeNode newRoot = new TreeNode(players[mid]);
+                if (players[mid].getRating() < curRoot.val.getRating()) {
+                    while (curRoot.left != null) {
+                        curRoot = curRoot.left;
+                    }
+                    if (players[mid].getRating() < curRoot.val.getRating()) {
+                        curRoot.left = newRoot;
+                    } else {
+                        curRoot.right = newRoot;
+                    }
+                } else {
+                    while (curRoot.right != null) {
+                        curRoot = curRoot.right;
+                    }
+                    if (players[mid].getRating() < curRoot.val.getRating()) {
+                        curRoot.left = newRoot;
+                    } else {
+                        curRoot.right = newRoot;
+                    }
+                }
+                rootStack.push(new MyTreeNode(newRoot, start, end));
             }
 
         }
