@@ -6,44 +6,58 @@ import academy.pocu.comp3500.lab6.leagueofpocu.Player;
 public class Program {
 
     public static void main(String[] args) {
-        {
-            Player player1 = new Player(1, "player1", 9);
-            Player player2 = new Player(2, "player2", 10);
-            Player player3 = new Player(3, "player3", 14);
-            Player player4 = new Player(4, "player4", 14);
+        // Constructors
+        League emptyLeague = new League();
 
-            League league = new League(new Player[]{player1, player2, player3, player4}, true);
+        Player[] emptyLeaguePlayers = emptyLeague.getTop(10);
 
-            Player player3Match = league.findMatchOrNull(player3); // player4
-            assert player3Match.getName().equals("player4");
-            Player player2Match = league.findMatchOrNull(player2); // player1
-            assert player2Match.getName().equals("player1");
-        }
+        assert (emptyLeaguePlayers.length == 0);
 
-        {
-            Player player1 = new Player(1, "player1", 12);
-            Player player2 = new Player(2, "player2", 17);
-            Player player3 = new Player(3, "player3", 12);
-            Player player4 = new Player(4, "player4", 18);
-            Player player5 = new Player(5, "player5", 10);
+        Player player1 = new Player(1, "player1", 4);
+        Player player2 = new Player(2, "player2", 6);
+        Player player3 = new Player(3, "player3", 6);
+        Player player4 = new Player(4, "player4", 7);
+        Player player5 = new Player(5, "player5", 10);
+        Player player6 = new Player(6, "player6", 12);
 
-            League league = new League(new Player[]{player1, player2, player3, player4, player5}, false);
+        League league1 = new League(new Player[]{player1, player2, player3, player4, player5, player6}, true);
+        League league2 = new League(new Player[]{player6, player4, player1, player2, player5, player3}, false);
 
-            Player[] topPlayers = league.getTop(3); // player4, player2, player1 or player4, player2, player3
-            int x=  0;
-        }
+        // findMatchOrNull()
+        Player match = league1.findMatchOrNull(player2);
+        assert (match.getId() == player3.getId());
 
-        {
-            Player player1 = new Player(1, "player1", 12);
-            Player player2 = new Player(2, "player2", 17);
-            Player player3 = new Player(3, "player3", 12);
-            Player player4 = new Player(4, "player4", 18);
-            Player player5 = new Player(5, "player5", 10);
+        match = league1.findMatchOrNull(player4);
+        assert (match.getId() == player2.getId() || match.getId() == player3.getId());
 
-            League league = new League(new Player[]{player1, player2, player3, player4, player5}, false);
+        match = league1.findMatchOrNull(player5);
+        assert (match.getId() == player6.getId());
 
-            Player[] bottomPlayers = league.getBottom(3); // player5, player1, player3 or player5, player3, player1
-            int x = 0;
-        }
+        // getTop(), getBottom()
+        Player[] topPlayers = league2.getTop(3);
+
+        assert (topPlayers[0].getId() == player6.getId());
+        assert (topPlayers[1].getId() == player5.getId());
+        assert (topPlayers[2].getId() == player4.getId());
+
+        Player[] bottomPlayers = league2.getBottom(3);
+
+        assert (bottomPlayers[0].getId() == player1.getId());
+        assert ((bottomPlayers[1].getId() == player2.getId() && bottomPlayers[2].getId() == player3.getId())
+                || (bottomPlayers[1].getId() == player3.getId() && bottomPlayers[2].getId() == player2.getId()));
+
+        // join()
+        boolean joinSuccess = league1.join(new Player(7, "player7", 9));
+        assert (joinSuccess);
+
+        joinSuccess = league1.join(new Player(1, "player1", 4));
+        assert (!joinSuccess);
+
+        // leave()
+        boolean leaveSuccess = league1.leave(new Player(5, "player5", 10));
+        assert (leaveSuccess);
+
+        leaveSuccess = league1.leave(new Player(5, "player5", 10));
+        assert (!leaveSuccess);
     }
 }

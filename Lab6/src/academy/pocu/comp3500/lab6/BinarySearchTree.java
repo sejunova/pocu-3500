@@ -3,29 +3,24 @@ package academy.pocu.comp3500.lab6;
 import academy.pocu.comp3500.lab6.leagueofpocu.Player;
 
 public class BinarySearchTree {
-    public static TreeNode insertIntoBST(TreeNode root, Player val) {
+    public static TreeNode insert(TreeNode root, Player val) {
         if (root == null) {
             return new TreeNode(val);
         }
 
         if (val.getRating() < root.val.getRating()) {
-            root.left = insertIntoBST(root.left, val);
+            root.left = insert(root.left, val);
         } else {
-            root.right = insertIntoBST(root.right ,val);
+            root.right = insert(root.right, val);
         }
         return root;
     }
 
-    public static TreeNode deleteNodeFromBST(TreeNode root, Player key) {
+    public static TreeNode delete(TreeNode root, Player key) {
         if (root == null)
             return root;
 
-        if (key.getRating() < root.val.getRating())
-            root.left = deleteNodeFromBST(root.left, key);
-        else if (key.getRating() > root.val.getRating())
-            root.right = deleteNodeFromBST(root.right, key);
-
-        else {
+        if (root.val.getId() == key.getId()) {
             if (root.left == null)
                 return root.right;
             else if (root.right == null)
@@ -37,20 +32,39 @@ public class BinarySearchTree {
                 s = s.left;
             }
             root.val = s.val;
-            root.right = deleteNodeFromBST(root.right, root.val);
+            root.right = delete(root.right, root.val);
+        } else if (key.getRating() < root.val.getRating()) {
+            root.left = delete(root.left, key);
+        } else {
+            root.right = delete(root.right, key);
         }
-
         return root;
     }
 
-    public static TreeNode searchBST(TreeNode root, Player val) {
+    public static TreeNode search(TreeNode root, Player val) {
         if (root == null || root.val.getId() == val.getId()) {
             return root;
         }
         if (val.getRating() < root.val.getRating()) {
-            return searchBST(root.left, val);
+            return search(root.left, val);
         } else {
-            return searchBST(root.right ,val);
+            return search(root.right, val);
+        }
+    }
+
+    public static void findClosest(TreeNode root, Player player, ClosestPlayer closestPlayer) {
+        if (root == null) {
+            return;
+        }
+
+        if (root.val.getId() != player.getId()) {
+            closestPlayer.updateNodes(root.val);
+        }
+
+        if (player.getRating() < root.val.getRating()) {
+            findClosest(root.left, player, closestPlayer);
+        } else {
+            findClosest(root.right, player, closestPlayer);
         }
     }
 
