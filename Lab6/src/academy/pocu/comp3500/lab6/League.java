@@ -11,7 +11,7 @@ public class League {
 
     public League(final Player[] players, boolean sorted) {
         if (players != null) {
-            if (sorted) {
+            if (sorted && players.length > 1000) {
                 root = BinarySearchTree.sortedArrayToBST(null, players);
             } else {
                 for (Player player : players) {
