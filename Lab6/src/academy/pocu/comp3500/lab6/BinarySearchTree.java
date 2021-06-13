@@ -10,11 +10,23 @@ public class BinarySearchTree {
         if (root == null) {
             return new TreeNode(val);
         }
-
-        if (val.getRating() < root.val.getRating()) {
-            root.left = insertAndReturnRoot(root.left, val);
-        } else {
-            root.right = insertAndReturnRoot(root.right, val);
+        TreeNode cur = root;
+        while (true) {
+            if (val.getRating() < cur.val.getRating()) {
+                if (cur.left == null) {
+                    cur.left = new TreeNode(val);
+                    break;
+                } else {
+                    cur = cur.left;
+                }
+            } else {
+                if (cur.right == null) {
+                    cur.right = new TreeNode(val);
+                    break;
+                } else {
+                    cur = cur.right;
+                }
+            }
         }
         return root;
     }
