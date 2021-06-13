@@ -3,9 +3,9 @@ package academy.pocu.comp3500.lab6;
 import academy.pocu.comp3500.lab6.leagueofpocu.Player;
 
 public class TreeNode {
-    Player val;
-    TreeNode left;
-    TreeNode right;
+    public Player val;
+    public TreeNode left;
+    public TreeNode right;
 
     TreeNode() {
     }
@@ -22,9 +22,9 @@ public class TreeNode {
 
     @Override
     public String toString() {
-        String val = this.val.getName();
-        String left = (this.left == null) ? "null" : this.left.val.getName();
-        String right = (this.right == null) ? "null" : this.right.val.getName();
+        String val = this.val.toString();
+        String left = (this.left == null) ? "null" : this.left.val.toString();
+        String right = (this.right == null) ? "null" : this.right.val.toString();
         return "TreeNode{" +
                 "val=" + val +
                 ", left=" + left +
