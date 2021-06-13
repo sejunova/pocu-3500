@@ -10,9 +10,9 @@ public class League {
     }
 
     public League(final Player[] players, boolean sorted) {
-        if (players != null) {
-            if (sorted && players.length > 10) {
-                root = BinarySearchTree.sortedArrayToBST(null, players);
+        if (players != null && players.length != 0) {
+            if (sorted) {
+                root = BinarySearchTree.sortedArrayToBST(players);
             } else {
                 for (Player player : players) {
                     root = BinarySearchTree.insertAndReturnRoot(root, player);
