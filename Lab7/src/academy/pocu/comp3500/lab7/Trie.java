@@ -33,10 +33,6 @@ public class Trie {
             return;
         }
 
-        if (maxCount == ret.size()) {
-            return;
-        }
-
         for (Map.Entry<Character, Integer> counterEntry : counter.entrySet()) {
             char c = counterEntry.getKey();
             int count = counterEntry.getValue();
@@ -45,6 +41,9 @@ public class Trie {
                 counter.put(c, count - 1);
 
                 searchRecursive(ret, chars, counter, inputLength, node.children.get(c), maxCount);
+                if (maxCount == ret.size()) {
+                    return;
+                }
 
                 chars.setLength(chars.length() - 1);
                 counter.put(c, count);
