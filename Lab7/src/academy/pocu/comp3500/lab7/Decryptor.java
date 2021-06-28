@@ -31,7 +31,7 @@ public class Decryptor {
 
     private static int getHash(String string) {
         int ret = 0;
-        for (char c: string.toCharArray()) {
+        for (char c : string.toCharArray()) {
             ret += c;
         }
         return ret;
