@@ -43,7 +43,7 @@ public class Trie {
                 searchRecursive(ret, chars, counter, inputLength, node.children.get(c));
 
                 chars.setLength(chars.length() - 1);
-                counter.put(c, count + 1);
+                counter.put(c, count);
             }
         }
     }
