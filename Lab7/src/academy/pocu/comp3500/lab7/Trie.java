@@ -2,7 +2,6 @@ package academy.pocu.comp3500.lab7;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 public class Trie {
     TrieNode root = new TrieNode();
@@ -33,21 +32,38 @@ public class Trie {
             return;
         }
 
-        for (Map.Entry<Character, Integer> counterEntry : counter.entrySet()) {
-            char c = counterEntry.getKey();
-            int count = counterEntry.getValue();
-            if (count > 0 && node.children.containsKey(c)) {
-                chars.append(c);
-                counter.put(c, count - 1);
-
-                searchRecursive(ret, chars, counter, inputLength, node.children.get(c), maxCount);
-                if (maxCount == ret.size()) {
-                    return;
-                }
-
-                chars.setLength(chars.length() - 1);
-                counter.put(c, count);
+        for (char c: node.children.keySet()) {
+            if (!counter.containsKey(c)) {
+                continue;
             }
+            int count = counter.get(c);
+            chars.append(c);
+            counter.put(c, count - 1);
+
+            searchRecursive(ret, chars, counter, inputLength, node.children.get(c), maxCount);
+            if (maxCount == ret.size()) {
+                return;
+            }
+
+            chars.setLength(chars.length() - 1);
+            counter.put(c, count);
         }
+
+//        for (Map.Entry<Character, Integer> counterEntry : counter.entrySet()) {
+//            char c = counterEntry.getKey();
+//            int count = counterEntry.getValue();
+//            if (count > 0 && node.children.containsKey(c)) {
+//                chars.append(c);
+//                counter.put(c, count - 1);
+//
+//                searchRecursive(ret, chars, counter, inputLength, node.children.get(c), maxCount);
+//                if (maxCount == ret.size()) {
+//                    return;
+//                }
+//
+//                chars.setLength(chars.length() - 1);
+//                counter.put(c, count);
+//            }
+//        }
     }
 }
