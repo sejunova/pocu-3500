@@ -32,7 +32,7 @@ public class Trie {
             return;
         }
 
-        for (char c: node.children.keySet()) {
+        for (char c : node.children.keySet()) {
             if (!counter.containsKey(c)) {
                 continue;
             }
