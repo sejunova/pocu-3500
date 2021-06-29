@@ -17,7 +17,7 @@ public class Trie {
     public ArrayList<String> search(String word, int maxCount) {
         ArrayList<String> ret = new ArrayList<>();
         HashMap<Character, Integer> counter = new HashMap<>();
-        for (char c : word.toLowerCase().toCharArray()) {
+        for (char c : word.toCharArray()) {
             counter.merge(c, 1, Integer::sum);
         }
         searchRecursive(ret, new StringBuilder(word.length()), counter, word.length(), root, maxCount);

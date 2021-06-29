@@ -18,14 +18,15 @@ public class Decryptor {
     }
 
     public String[] findCandidates(final String word) {
-        final int hash = getHash(word);
-        final int wordLength = word.length();
+        String wordLowercase = word.toLowerCase();
+        final int hash = getHash(wordLowercase);
+        final int wordLength = wordLowercase.length();
         if (!maxWordLengthsInfo.containsKey(wordLength) || !(maxWordLengthsInfo.get(wordLength).containsKey(hash))) {
             return new String[0];
         }
 
         int maxCount = maxWordLengthsInfo.get(wordLength).get(hash);
-        ArrayList<String> candidates = trie.search(word, maxCount);
+        ArrayList<String> candidates = trie.search(wordLowercase, maxCount);
         String[] result = new String[candidates.size()];
         for (int i = 0; i < result.length; i++) {
             result[i] = candidates.get(i);
