@@ -37,6 +37,9 @@ public class Trie {
                 continue;
             }
             int count = counter.get(c);
+            if (count <= 0) {
+                continue;
+            }
             chars.append(c);
             counter.put(c, count - 1);
 
