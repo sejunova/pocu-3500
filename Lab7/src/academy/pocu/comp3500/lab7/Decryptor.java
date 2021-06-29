@@ -9,6 +9,7 @@ public class Decryptor {
 
     public Decryptor(final String[] codeWords) {
         for (String codeWord : codeWords) {
+            codeWord = codeWord.toLowerCase();
             trie.insert(codeWord);
             final int wordLength = codeWord.length();
             maxWordLengthsInfo.putIfAbsent(wordLength, new HashMap<>());
