@@ -1,8 +1,5 @@
 package academy.pocu.comp3500.lab8.maze;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public final class Point {
     private final int x;
     private final int y;
