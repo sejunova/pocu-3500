@@ -6,6 +6,7 @@ import java.util.List;
 public final class Point {
     private static final int[] dx = new int[]{1, 0, -1, 0};
     private static final int[] dy = new int[]{0, 1, 0, -1};
+
     private final int x;
     private final int y;
 
