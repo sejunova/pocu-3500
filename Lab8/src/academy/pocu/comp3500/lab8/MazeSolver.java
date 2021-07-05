@@ -7,8 +7,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 public final class MazeSolver {
-    private static final int[] dx = new int[]{1, 0, -1, 0};
-    private static final int[] dy = new int[]{0, 1, 0, -1};
+    private static final int[] DX = new int[]{1, 0, -1, 0};
+    private static final int[] DY = new int[]{0, 1, 0, -1};
 
     public static List<Point> findPath(final char[][] maze, final Point start) {
         if (maze[start.getY()][start.getX()] == 'E') {
@@ -46,8 +46,8 @@ public final class MazeSolver {
     private static List<Point> getNextAvailablePoints(final char[][] maze, Point point) {
         List<Point> nextAvailablePoints = new ArrayList<>();
         for (int i = 0; i < 4; i++) {
-            int nx = point.getX() + dx[i];
-            int ny = point.getY() + dy[i];
+            int nx = point.getX() + DX[i];
+            int ny = point.getY() + DY[i];
             if (nx < 0 || nx >= maze[0].length || ny < 0 || ny >= maze.length) {
                 continue;
             }
