@@ -21,75 +21,6 @@ public class Player extends PlayerBase {
         super(isWhite, maxMoveTimeMilliseconds);
     }
 
-    @Override
-    public Move getNextMove(char[][] board) {
-        board = createCopy(board);
-        Score curBestScore = new Score(null, 0);
-        Score score = getBestMoveRecursive(board, this, new Player(!isWhite(), this.getMaxMoveTimeMilliseconds()), this, new Score(new Move(0, 0, 0, 0), 0), 0, curBestScore);
-        return score.move;
-    }
-
-    @Override
-    public Move getNextMove(char[][] board, Move opponentMove) {
-
-        board = createCopy(board);
-        Score curBestScore = new Score(null, 0);
-        Score score = getBestMoveRecursive(board, this, new Player(!isWhite(), this.getMaxMoveTimeMilliseconds()), this, new Score(opponentMove, 0), 0, curBestScore);
-        return score.move;
-    }
-
-    private Score getBestMoveRecursive(final char[][] board, final Player player, final Player opponent, final Player turn, Score prevScore, int depth, Score curBestScore) {
-        if (depth == MAX_DEPTH || isKingCaptured(board)) {
-            if (prevScore.score > curBestScore.score) {
-                curBestScore.score = prevScore.score;
-            }
-            return prevScore;
-        }
-
-
-        List<Move> nextAvailableMoves = getNextAvailableMoves(board, turn);
-        List<Score> scores = new ArrayList<>(nextAvailableMoves.size());
-        for (Move nextAvailableMove:nextAvailableMoves) {
-            int scoreEarned = getScoreByCatching(board, nextAvailableMove) + getScoreByPositioning(nextAvailableMove);
-
-            Player nextPlayer;
-            Score nextScore;
-            if (player == turn) {
-                nextScore = new Score(nextAvailableMove, prevScore.score + scoreEarned);
-                nextPlayer = opponent;
-            } else {
-                nextScore = new Score(nextAvailableMove, prevScore.score - scoreEarned);
-                nextPlayer = player;
-            }
-//            if (curBestScore.score > nextScore.score + 80) {
-//                scores.add(nextScore);
-//                continue;
-//            }
-
-            char fromChar = board[nextAvailableMove.fromY][nextAvailableMove.fromX];
-            char toChar = board[nextAvailableMove.toY][nextAvailableMove.toX];
-
-            board[nextAvailableMove.toY][nextAvailableMove.toX] = fromChar;
-            board[nextAvailableMove.fromY][nextAvailableMove.fromX] = '\0';
-
-            int bestScore = getBestMoveRecursive(board, player, opponent, nextPlayer, nextScore, depth + 1, curBestScore).score;
-
-            board[nextAvailableMove.fromY][nextAvailableMove.fromX] = fromChar;
-            board[nextAvailableMove.toY][nextAvailableMove.toX] = toChar;
-            scores.add(new Score(nextAvailableMove, bestScore));
-        }
-
-        if (depth == 0) {
-            return getMaxScoreMove(scores);
-        }
-
-        if (turn == player) {
-            return getMaxScoreMove(scores);
-        }
-
-        return getMinScoreMove(scores);
-    }
-
     private static int getScoreByCatching(final char[][] board, Move move) {
         if (Character.toLowerCase(board[move.toY][move.toX]) == 'k') {
             return KING_VALUE;
@@ -135,11 +66,11 @@ public class Player extends PlayerBase {
         return toScore - fromScore;
     }
 
-    private static Score getMaxScoreMove(final List<Score> Scores) {
-        Score bestMove = Scores.get(0);
-        for (int i = 1; i < Scores.size(); ++i) {
-            if (Scores.get(i).score > bestMove.score) {
-                bestMove = Scores.get(i);
+    private static Score getMaxScoreMove(final List<Score> scores) {
+        Score bestMove = scores.get(0);
+        for (int i = 1; i < scores.size(); ++i) {
+            if (scores.get(i).score > bestMove.score) {
+                bestMove = scores.get(i);
             }
         }
         return bestMove;
@@ -155,16 +86,10 @@ public class Player extends PlayerBase {
         return bestMove;
     }
 
-
-
-
     private static List<Move> getNextAvailableMoves(final char[][] board, Player player) {
         List<Move> nextAvailableMoves = new ArrayList<>();
         for (int y = 0; y < BOARD_SIZE; y++) {
             for (int x = 0; x < BOARD_SIZE; x++) {
-                if (x ==4 && y == 4) {
-                    int z=  0;
-                }
                 if (board[y][x] == '\0' || (player.isWhite() && Character.isUpperCase(board[y][x])) || (!player.isWhite() && Character.isLowerCase(board[y][x]))) {
                     continue;
                 }
@@ -202,6 +127,90 @@ public class Player extends PlayerBase {
         return !(blackKingAlive && whiteKingAlive);
     }
 
+    private static char[][] createCopy(final char[][] board) {
+        assert (board.length == BOARD_SIZE);
+        assert (board[0].length == BOARD_SIZE);
+
+        final char[][] copy = new char[BOARD_SIZE][BOARD_SIZE];
+
+        for (int i = 0; i < BOARD_SIZE; ++i) {
+            for (int j = 0; j < BOARD_SIZE; ++j) {
+                copy[i][j] = board[i][j];
+            }
+        }
+
+        return copy;
+    }
+
+    @Override
+    public Move getNextMove(char[][] board) {
+        board = createCopy(board);
+        Score curBestScore = new Score(null, 0);
+        Score score = getBestMoveRecursive(board, this, new Player(!isWhite(), this.getMaxMoveTimeMilliseconds()), this, new Score(new Move(0, 0, 0, 0), 0), 0, curBestScore);
+        return score.move;
+    }
+
+    @Override
+    public Move getNextMove(char[][] board, Move opponentMove) {
+
+        board = createCopy(board);
+        Score curBestScore = new Score(null, 0);
+        Score score = getBestMoveRecursive(board, this, new Player(!isWhite(), this.getMaxMoveTimeMilliseconds()), this, new Score(opponentMove, 0), 0, curBestScore);
+        return score.move;
+    }
+
+    private Score getBestMoveRecursive(final char[][] board, final Player player, final Player opponent, final Player turn, Score prevScore, int depth, Score curBestScore) {
+        if (depth == MAX_DEPTH || isKingCaptured(board)) {
+            if (prevScore.score > curBestScore.score) {
+                curBestScore.score = prevScore.score;
+            }
+            return prevScore;
+        }
+
+
+        List<Move> nextAvailableMoves = getNextAvailableMoves(board, turn);
+        List<Score> scores = new ArrayList<>(nextAvailableMoves.size());
+        for (Move nextAvailableMove : nextAvailableMoves) {
+            int scoreEarned = getScoreByCatching(board, nextAvailableMove) + getScoreByPositioning(nextAvailableMove);
+
+            Player nextPlayer;
+            Score nextScore;
+            if (player == turn) {
+                nextScore = new Score(nextAvailableMove, prevScore.score + scoreEarned);
+                nextPlayer = opponent;
+            } else {
+                nextScore = new Score(nextAvailableMove, prevScore.score - scoreEarned);
+                nextPlayer = player;
+            }
+//            if (curBestScore.score > nextScore.score + 80) {
+//                scores.add(nextScore);
+//                continue;
+//            }
+
+            char fromChar = board[nextAvailableMove.fromY][nextAvailableMove.fromX];
+            char toChar = board[nextAvailableMove.toY][nextAvailableMove.toX];
+
+            board[nextAvailableMove.toY][nextAvailableMove.toX] = fromChar;
+            board[nextAvailableMove.fromY][nextAvailableMove.fromX] = '\0';
+
+            int bestScore = getBestMoveRecursive(board, player, opponent, nextPlayer, nextScore, depth + 1, curBestScore).score;
+
+            board[nextAvailableMove.fromY][nextAvailableMove.fromX] = fromChar;
+            board[nextAvailableMove.toY][nextAvailableMove.toX] = toChar;
+            scores.add(new Score(nextAvailableMove, bestScore));
+        }
+
+        if (depth == 0) {
+            return getMaxScoreMove(scores);
+        }
+
+        if (turn == player) {
+            return getMaxScoreMove(scores);
+        }
+
+        return getMinScoreMove(scores);
+    }
+
     private static class Score {
         Move move;
         int score;
@@ -218,38 +227,4 @@ public class Player extends PlayerBase {
                     '}';
         }
     }
-
-    private static char[][] createCopy(final char[][] board) {
-        assert (board.length == BOARD_SIZE);
-        assert (board[0].length == BOARD_SIZE);
-
-        final char[][] copy = new char[BOARD_SIZE][BOARD_SIZE];
-
-        for (int i = 0; i < BOARD_SIZE; ++i) {
-            for (int j = 0; j < BOARD_SIZE; ++j) {
-                copy[i][j] = board[i][j];
-            }
-        }
-
-        return copy;
-    }
-
-    public static void main(String[] args) {
-        Player white = new Player(true, 100000000);
-        Player black = new Player(false, 100000000);
-
-        char[][] board = new char[][] {
-                {'\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0'},
-                {'\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0'},
-                {'\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0'},
-                {'\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0'},
-                {'\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0'},
-                {'\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0'},
-                {'\0', '\0', '\0', 'K', '\0', '\0', '\0', '\0'},
-                {'\0', '\0', '\0', '\0', 'k', '\0', '\0', '\0'},
-        };
-        Move move = black.getNextMove(board, new Move(4, 1, 4, 2));
-        int x = 0;
-    }
-
 }

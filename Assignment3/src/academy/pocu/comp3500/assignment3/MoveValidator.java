@@ -3,12 +3,10 @@ package academy.pocu.comp3500.assignment3;
 import academy.pocu.comp3500.assignment3.chess.Move;
 import academy.pocu.comp3500.assignment3.chess.PlayerBase;
 
-import java.util.concurrent.TimeUnit;
-
 final class MoveValidator {
     public final static int BOARD_SIZE = 8;
 
-    private static final int[][] kingMoveOffsets = {
+    private static final int[][] KING_MOVE_OFFSETS = {
             {-1, 1},
             {-1, 0},
             {-1, -1},
@@ -19,7 +17,7 @@ final class MoveValidator {
             {1, -1}
     };
 
-    private static final int[][] knightMoveOffsets = {
+    private static final int[][] KNIGHT_MOVE_OFFSETS = {
             {-2, -1},
             {-2, 1},
             {-1, -2},
@@ -168,8 +166,8 @@ final class MoveValidator {
             return false;
         }
 
-        for (int i = 0; i < knightMoveOffsets.length; ++i) {
-            if (move.fromX + knightMoveOffsets[i][0] == move.toX && move.fromY + knightMoveOffsets[i][1] == move.toY) {
+        for (int i = 0; i < KNIGHT_MOVE_OFFSETS.length; ++i) {
+            if (move.fromX + KNIGHT_MOVE_OFFSETS[i][0] == move.toX && move.fromY + KNIGHT_MOVE_OFFSETS[i][1] == move.toY) {
                 return true;
             }
         }
@@ -189,8 +187,8 @@ final class MoveValidator {
             return false;
         }
 
-        for (int i = 0; i < kingMoveOffsets.length; ++i) {
-            if (move.fromX + kingMoveOffsets[i][0] == move.toX && move.fromY + kingMoveOffsets[i][1] == move.toY) {
+        for (int i = 0; i < KING_MOVE_OFFSETS.length; ++i) {
+            if (move.fromX + KING_MOVE_OFFSETS[i][0] == move.toX && move.fromY + KING_MOVE_OFFSETS[i][1] == move.toY) {
                 return true;
             }
         }
