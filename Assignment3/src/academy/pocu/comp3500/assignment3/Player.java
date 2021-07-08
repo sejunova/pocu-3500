@@ -24,7 +24,8 @@ public class Player extends PlayerBase {
     @Override
     public Move getNextMove(char[][] board) {
         board = createCopy(board);
-        Score score = getBestMoveRecursive(board, this, new Player(!isWhite(), this.getMaxMoveTimeMilliseconds()), this, new Score(new Move(0, 0, 0, 0), 0), 0);
+        Score curBestScore = new Score(null, 0);
+        Score score = getBestMoveRecursive(board, this, new Player(!isWhite(), this.getMaxMoveTimeMilliseconds()), this, new Score(new Move(0, 0, 0, 0), 0), 0, curBestScore);
         return score.move;
     }
 
@@ -32,12 +33,16 @@ public class Player extends PlayerBase {
     public Move getNextMove(char[][] board, Move opponentMove) {
 
         board = createCopy(board);
-        Score score = getBestMoveRecursive(board, this, new Player(!isWhite(), this.getMaxMoveTimeMilliseconds()), this, new Score(opponentMove, 0), 0);
+        Score curBestScore = new Score(null, 0);
+        Score score = getBestMoveRecursive(board, this, new Player(!isWhite(), this.getMaxMoveTimeMilliseconds()), this, new Score(opponentMove, 0), 0, curBestScore);
         return score.move;
     }
 
-    private Score getBestMoveRecursive(final char[][] board, final Player player, final Player opponent, final Player turn, Score prevScore, int depth) {
+    private Score getBestMoveRecursive(final char[][] board, final Player player, final Player opponent, final Player turn, Score prevScore, int depth, Score curBestScore) {
         if (depth == MAX_DEPTH || isKingCaptured(board)) {
+            if (prevScore.score > curBestScore.score) {
+                curBestScore.score = prevScore.score;
+            }
             return prevScore;
         }
 
@@ -46,7 +51,6 @@ public class Player extends PlayerBase {
         List<Score> scores = new ArrayList<>(nextAvailableMoves.size());
         for (Move nextAvailableMove:nextAvailableMoves) {
             int scoreEarned = getScoreByCatching(board, nextAvailableMove) + getScoreByPositioning(nextAvailableMove);
-
 
             Player nextPlayer;
             Score nextScore;
@@ -57,6 +61,10 @@ public class Player extends PlayerBase {
                 nextScore = new Score(nextAvailableMove, prevScore.score - scoreEarned);
                 nextPlayer = player;
             }
+            if (curBestScore.score > nextScore.score + 80) {
+                scores.add(nextScore);
+                continue;
+            }
 
             char fromChar = board[nextAvailableMove.fromY][nextAvailableMove.fromX];
             char toChar = board[nextAvailableMove.toY][nextAvailableMove.toX];
@@ -64,11 +72,15 @@ public class Player extends PlayerBase {
             board[nextAvailableMove.toY][nextAvailableMove.toX] = fromChar;
             board[nextAvailableMove.fromY][nextAvailableMove.fromX] = '\0';
 
-            int bestScore = getBestMoveRecursive(board, player, opponent, nextPlayer, nextScore, depth + 1).score;
+            int bestScore = getBestMoveRecursive(board, player, opponent, nextPlayer, nextScore, depth + 1, curBestScore).score;
 
             board[nextAvailableMove.fromY][nextAvailableMove.fromX] = fromChar;
             board[nextAvailableMove.toY][nextAvailableMove.toX] = toChar;
             scores.add(new Score(nextAvailableMove, bestScore));
+        }
+
+        if (depth == 0) {
+            return getMaxScoreMove(scores);
         }
 
         if (turn == player) {
@@ -167,11 +179,6 @@ public class Player extends PlayerBase {
             for (int toX = 0; toX < BOARD_SIZE; toX++) {
                 Move move = new Move(fromX, fromY, toX, toY);
                 if (MoveValidator.isMoveValid(board, player, move)) {
-//                    char[][] fromBoard = new char[BOARD_SIZE][BOARD_SIZE];
-//                    char[][] toBoard = new char[BOARD_SIZE][BOARD_SIZE];
-//                    fromBoard[fromY][fromX] = board[fromY][fromX];
-//                    toBoard[toY][toX] = board[fromY][fromX];
-
                     nextAvailableMoves.add(move);
                 }
             }
@@ -203,6 +210,13 @@ public class Player extends PlayerBase {
             this.move = move;
             this.score = score;
         }
+
+        @Override
+        public String toString() {
+            return "Score{" +
+                    "score=" + score +
+                    '}';
+        }
     }
 
     private static char[][] createCopy(final char[][] board) {
@@ -225,13 +239,13 @@ public class Player extends PlayerBase {
         Player black = new Player(false, 100000000);
 
         char[][] board = new char[][] {
+                {'\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0'},
+                {'\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0'},
+                {'\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0'},
+                {'\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0'},
+                {'\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0'},
+                {'\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0'},
                 {'\0', '\0', '\0', 'K', '\0', '\0', '\0', '\0'},
-                {'\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0'},
-                {'\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0'},
-                {'\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0'},
-                {'\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0'},
-                {'\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0'},
-                {'\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0'},
                 {'\0', '\0', '\0', '\0', 'k', '\0', '\0', '\0'},
         };
         Move move = black.getNextMove(board, new Move(4, 1, 4, 2));
