@@ -45,7 +45,8 @@ public class Player extends PlayerBase {
         List<Move> nextAvailableMoves = getNextAvailableMoves(board, turn);
         List<Score> scores = new ArrayList<>(nextAvailableMoves.size());
         for (Move nextAvailableMove:nextAvailableMoves) {
-            int scoreEarned = getScore(board, nextAvailableMove);
+            int scoreEarned = getScoreByCatching(board, nextAvailableMove) + getScoreByPositioning(nextAvailableMove);
+
 
             Player nextPlayer;
             Score nextScore;
@@ -77,7 +78,7 @@ public class Player extends PlayerBase {
         return getMinScoreMove(scores);
     }
 
-    private static int getScore(final char[][] board, Move move) {
+    private static int getScoreByCatching(final char[][] board, Move move) {
         if (Character.toLowerCase(board[move.toY][move.toX]) == 'k') {
             return KING_VALUE;
         } else if (Character.toLowerCase(board[move.toY][move.toX]) == 'q') {
@@ -93,6 +94,33 @@ public class Player extends PlayerBase {
         } else {
             return 0;
         }
+    }
+
+    private static int getScoreByPositioning(Move move) {
+        int fromScore = 0;
+        if (0 <= move.fromX && move.fromX <= 2) {
+            fromScore -= move.fromX - 3;
+        } else if (5 <= move.fromX && move.fromX <= 7) {
+            fromScore -= 4 - move.fromX;
+        }
+        if (0 <= move.fromY && move.fromY <= 2) {
+            fromScore -= move.fromY - 3;
+        } else if (5 <= move.fromY && move.fromY <= 7) {
+            fromScore -= 4 - move.fromY;
+        }
+
+        int toScore = 0;
+        if (0 <= move.toX && move.toX <= 2) {
+            toScore -= move.toX - 3;
+        } else if (5 <= move.toX && move.toX <= 7) {
+            toScore -= 4 - move.toX;
+        }
+        if (0 <= move.toY && move.toY <= 2) {
+            toScore -= move.toY - 3;
+        } else if (5 <= move.toY && move.toY <= 7) {
+            toScore -= 4 - move.toY;
+        }
+        return toScore - fromScore;
     }
 
     private static Score getMaxScoreMove(final List<Score> Scores) {
@@ -204,9 +232,9 @@ public class Player extends PlayerBase {
                 {'\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0'},
                 {'\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0'},
                 {'\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0'},
-                {'\0', '\0', '\0', 'k', '\0', '\0', '\0', '\0'},
+                {'\0', '\0', '\0', '\0', 'k', '\0', '\0', '\0'},
         };
-        Move move = white.getNextMove(board, new Move(4, 1, 4, 2));
+        Move move = black.getNextMove(board, new Move(4, 1, 4, 2));
         int x = 0;
     }
 
