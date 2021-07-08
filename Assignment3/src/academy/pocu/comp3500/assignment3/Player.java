@@ -23,10 +23,9 @@ public class Player extends PlayerBase {
 
     @Override
     public Move getNextMove(char[][] board) {
-        if (isWhite()) {
-            return new Move(4, 6, 4, 5);
-        }
-        return new Move(4, 1, 4, 2);
+        board = createCopy(board);
+        Score score = getBestMoveRecursive(board, this, new Player(!isWhite(), this.getMaxMoveTimeMilliseconds()), this, new Score(new Move(0, 0, 0, 0), 0), 0);
+        return score.move;
     }
 
     @Override
@@ -47,9 +46,7 @@ public class Player extends PlayerBase {
         List<Score> scores = new ArrayList<>(nextAvailableMoves.size());
         for (Move nextAvailableMove:nextAvailableMoves) {
             int scoreEarned = getScore(board, nextAvailableMove);
-            if (scoreEarned == 90) {
-                int xx = 0;
-            }
+
             Player nextPlayer;
             Score nextScore;
             if (player == turn) {
@@ -154,14 +151,20 @@ public class Player extends PlayerBase {
     }
 
     public static boolean isKingCaptured(final char[][] board) {
+        boolean blackKingAlive = false;
+        boolean whiteKingAlive = false;
+
         for (int y = 0; y < BOARD_SIZE; y++) {
             for (int x = 0; x < BOARD_SIZE; x++) {
-                if (board[y][x] == 'K' || board[y][x] == 'k') {
-                    return false;
+                if (board[y][x] == 'K') {
+                    blackKingAlive = true;
+                }
+                if (board[y][x] == 'k') {
+                    whiteKingAlive = true;
                 }
             }
         }
-        return true;
+        return !(blackKingAlive && whiteKingAlive);
     }
 
     private static class Score {
@@ -194,16 +197,17 @@ public class Player extends PlayerBase {
         Player black = new Player(false, 100000000);
 
         char[][] board = new char[][] {
-                {'\0', '\0', '\0', 'K', 'Q', '\0', '\0', '\0'},
-                {'\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0'},
-                {'\0', '\0', '\0', '\0', 'P', '\0', '\0', '\0'},
+                {'\0', '\0', '\0', 'K', '\0', '\0', '\0', '\0'},
                 {'\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0'},
                 {'\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0'},
                 {'\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0'},
                 {'\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0'},
-                {'\0', '\0', '\0', 'k', 'q', '\0', '\0', '\0'},
+                {'\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0'},
+                {'\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0'},
+                {'\0', '\0', '\0', 'k', '\0', '\0', '\0', '\0'},
         };
-        white.getNextMove(board, new Move(4, 1, 4, 2));
+        Move move = white.getNextMove(board, new Move(4, 1, 4, 2));
+        int x = 0;
     }
 
 }
