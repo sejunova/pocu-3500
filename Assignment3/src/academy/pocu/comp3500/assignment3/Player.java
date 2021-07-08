@@ -61,10 +61,10 @@ public class Player extends PlayerBase {
                 nextScore = new Score(nextAvailableMove, prevScore.score - scoreEarned);
                 nextPlayer = player;
             }
-            if (curBestScore.score > nextScore.score + 80) {
-                scores.add(nextScore);
-                continue;
-            }
+//            if (curBestScore.score > nextScore.score + 80) {
+//                scores.add(nextScore);
+//                continue;
+//            }
 
             char fromChar = board[nextAvailableMove.fromY][nextAvailableMove.fromX];
             char toChar = board[nextAvailableMove.toY][nextAvailableMove.toX];
