@@ -23,6 +23,10 @@ public class CodingMan {
                 startClipIdx = i;
             }
 
+            if (clip.getEndTime() <= curEnd) {
+                continue;
+            }
+
             curEnd = clip.getEndTime();
 
             int curTime = curEnd - curStart;
