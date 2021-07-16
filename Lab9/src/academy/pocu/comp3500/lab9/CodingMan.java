@@ -2,12 +2,35 @@ package academy.pocu.comp3500.lab9;
 
 import academy.pocu.comp3500.lab9.data.VideoClip;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 
 public class CodingMan {
     public static int findMinClipsCount(final VideoClip[] clips, int time) {
-        Arrays.sort(clips, Comparator.comparingInt(VideoClip::getStartTime));
+        if (clips.length == 0) {
+            return -1;
+        }
+
+        Arrays.sort(clips, (v0, v1) -> {
+            if (v0.getStartTime() > v1.getStartTime()) {
+                return 1;
+            } else if (v0.getStartTime() < v1.getStartTime()) {
+                return -1;
+            }
+            return Integer.compare(v0.getEndTime(), v1.getEndTime());
+        });
+
+        ArrayList<VideoClip> videoClips = new ArrayList<>(clips.length);
+        videoClips.add(clips[0]);
+        for (int i = 1; i < clips.length; i++) {
+            int lastIdx = videoClips.size() - 1;
+            VideoClip lastElement = videoClips.get(lastIdx);
+            if (lastElement.getStartTime() == clips[i].getStartTime()) {
+                videoClips.set(lastIdx, clips[i]);
+            } else if (clips[i].getEndTime() > lastElement.getEndTime()) {
+                videoClips.add(clips[i]);
+            }
+        }
 
         int answer = Integer.MAX_VALUE;
         int curStart = 0;
@@ -15,8 +38,8 @@ public class CodingMan {
 
         int startClipIdx = 0;
 
-        for (int i = 0; i < clips.length; i++) {
-            VideoClip clip = clips[i];
+        for (int i = 0; i < videoClips.size(); i++) {
+            VideoClip clip = videoClips.get(i);
             // 앞의 클립과 이어질 수 없는 경우
             if (clip.getStartTime() > curEnd) {
                 curStart = clip.getStartTime();
@@ -37,7 +60,7 @@ public class CodingMan {
                 while (startClipIdx < i && curTime >= time) {
                     answer = Math.min(answer, i - startClipIdx + 1);
                     startClipIdx++;
-                    curStart = clips[startClipIdx].getStartTime();
+                    curStart = videoClips.get(startClipIdx).getStartTime();
                     curTime = curEnd - curStart;
                 }
             }
@@ -47,9 +70,7 @@ public class CodingMan {
 
     public static void main(String[] args) {
         VideoClip[] clips = new VideoClip[]{
-                new VideoClip(0, 15),
-                new VideoClip(10, 20),
-                new VideoClip(30, 35)
+                new VideoClip(10, 20)
         };
 
         int count = CodingMan.findMinClipsCount(clips, 10); // 1

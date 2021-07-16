@@ -16,4 +16,9 @@ public final class VideoClip {
     public int getEndTime() {
         return endTime;
     }
+
+    @Override
+    public String toString() {
+        return String.format("(%d, %d)", startTime, endTime);
+    }
 }
