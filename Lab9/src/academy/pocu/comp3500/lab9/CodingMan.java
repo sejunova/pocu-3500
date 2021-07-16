@@ -42,6 +42,9 @@ public class CodingMan {
 
             // 3. 이전 클립을 완전히 포함하는 경우
             if (clip.getStartTime() <= prev.getStartTime()) {
+                if (clip.getEndTime() >= time) {
+                    return answer;
+                }
                 prev = new VideoClip(prev.getStartTime(), clip.getEndTime());
                 continue;
             }
