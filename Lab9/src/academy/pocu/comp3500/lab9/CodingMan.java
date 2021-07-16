@@ -69,7 +69,7 @@ public class CodingMan {
                 }
             }
         }
-        return (answer == Integer.MAX_VALUE) ? -1 : answer;
+        return answer;
     }
 
     public static void main(String[] args) {
