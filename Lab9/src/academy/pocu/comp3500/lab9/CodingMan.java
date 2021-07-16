@@ -41,6 +41,7 @@ public class CodingMan {
         int curEnd = 0;
 
         int startClipIdx = 0;
+        boolean foundClips = false;
 
         for (int i = 0; i < videoClips.size(); i++) {
             VideoClip clip = videoClips.get(i);
@@ -61,6 +62,7 @@ public class CodingMan {
                 if (startClipIdx == i) {
                     return 1;
                 }
+                foundClips = true;
                 while (startClipIdx < i && curTime >= time) {
                     answer = Math.min(answer, i - startClipIdx + 1);
                     startClipIdx++;
@@ -69,26 +71,21 @@ public class CodingMan {
                 }
             }
         }
-        return answer;
+        return (foundClips) ? answer : - 1;
     }
 
     public static void main(String[] args) {
         VideoClip[] clips = new VideoClip[]{
-                new VideoClip(13, 20),
-                new VideoClip(15, 20),
-                new VideoClip(17, 20),
-                new VideoClip(10, 20),
-                new VideoClip(10, 30),
-                new VideoClip(16, 35)
+                new VideoClip(0, 20),
+                new VideoClip(15, 30),
+                new VideoClip(50, 90),
+                new VideoClip(100, 101),
+
         };
 
-        int count = CodingMan.findMinClipsCount(clips, 10); // 1
+        int count = CodingMan.findMinClipsCount(clips, 30);
         System.out.println(count);
-        count = CodingMan.findMinClipsCount(clips, 20); // 2
-        System.out.println(count);
-        count = CodingMan.findMinClipsCount(clips, 25); // -1
-        System.out.println(count);
-        count = CodingMan.findMinClipsCount(clips, 35); // -1
+        count = CodingMan.findMinClipsCount(clips, 31);
         System.out.println(count);
 
     }
