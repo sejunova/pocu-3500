@@ -44,20 +44,4 @@ public class ProfitCalculator {
         }
         return r + 1;
     }
-
-    public static void main(String[] args) {
-        Task[] tasks = new Task[]{
-                new Task(20, 30),
-                new Task(30, 40),
-                new Task(10, 35)
-        };
-
-        int profit = ProfitCalculator.findMaxProfit(tasks, new int[]{10}); // 35
-        System.out.println(profit);
-        profit = ProfitCalculator.findMaxProfit(tasks, new int[]{20, 25}); // 70
-        System.out.println(profit);
-        profit = ProfitCalculator.findMaxProfit(tasks, new int[]{40, 15, 5}); // 75
-        System.out.println(profit);
-
-    }
 }

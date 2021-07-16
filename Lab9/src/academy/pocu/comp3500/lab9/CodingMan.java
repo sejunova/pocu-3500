@@ -35,8 +35,14 @@ public class CodingMan {
                 return -1;
             }
 
-            // 3. 이전 클립에 포함되는 경우
+            // 2. 이전 클립에 포함되는 경우
             if (clip.getEndTime() <= prev.getEndTime()) {
+                continue;
+            }
+
+            // 3. 이전 클립을 완전히 포함하는 경우
+            if (clip.getStartTime() <= prev.getStartTime()) {
+                prev = new VideoClip(prev.getStartTime(), clip.getEndTime());
                 continue;
             }
 
@@ -48,41 +54,5 @@ public class CodingMan {
             prev = new VideoClip(prev.getEndTime(), clip.getEndTime());
         }
         return -1;
-    }
-
-    public static void main(String[] args) {
-        VideoClip[] clips = new VideoClip[]{
-                new VideoClip(0, 10),
-        };
-        int airTime = 10;
-
-        int count = CodingMan.findMinClipsCount(clips, airTime);
-
-        System.out.println(count); // 1
-
-        clips = new VideoClip[]{
-                new VideoClip(30, 60),
-                new VideoClip(0, 20)
-        };
-        airTime = 40;
-
-        count = CodingMan.findMinClipsCount(clips, airTime);
-
-        System.out.println(count); // -1
-
-        clips = new VideoClip[]{
-                new VideoClip(0, 5),
-                new VideoClip(0, 20),
-                new VideoClip(5, 30),
-                new VideoClip(25, 35),
-                new VideoClip(35, 70),
-                new VideoClip(50, 75)
-        };
-        airTime = 60;
-
-        count = CodingMan.findMinClipsCount(clips, airTime);
-
-        System.out.println(count); // 4
-
     }
 }
