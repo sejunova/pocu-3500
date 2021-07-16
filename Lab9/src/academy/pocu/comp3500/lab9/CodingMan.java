@@ -32,6 +32,10 @@ public class CodingMan {
             }
         }
 
+        if (videoClips.get(videoClips.size() - 1).getEndTime() - videoClips.get(0).getStartTime() < time) {
+            return -1;
+        }
+
         int answer = Integer.MAX_VALUE;
         int curStart = 0;
         int curEnd = 0;
@@ -70,7 +74,12 @@ public class CodingMan {
 
     public static void main(String[] args) {
         VideoClip[] clips = new VideoClip[]{
-                new VideoClip(10, 20)
+                new VideoClip(13, 20),
+                new VideoClip(15, 20),
+                new VideoClip(17, 20),
+                new VideoClip(10, 20),
+                new VideoClip(10, 30),
+                new VideoClip(16, 35)
         };
 
         int count = CodingMan.findMinClipsCount(clips, 10); // 1
