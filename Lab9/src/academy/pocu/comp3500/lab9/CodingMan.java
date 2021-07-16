@@ -2,7 +2,6 @@ package academy.pocu.comp3500.lab9;
 
 import academy.pocu.comp3500.lab9.data.VideoClip;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 public class CodingMan {
@@ -17,44 +16,36 @@ public class CodingMan {
             } else if (v0.getStartTime() < v1.getStartTime()) {
                 return -1;
             }
-            return Integer.compare(v0.getEndTime(), v1.getEndTime());
+            return Integer.compare(v1.getEndTime(), v0.getEndTime());
         });
 
-        if (clips[0].getStartTime() != 0) {
+        VideoClip prev = clips[0];
+        if (prev.getStartTime() != 0) {
             return -1;
         }
+        if (prev.getEndTime() >= time) {
+            return 1;
+        }
 
-        ArrayList<VideoClip> videoClips = new ArrayList<>(clips.length);
-        videoClips.add(clips[0]);
+        int answer = 1;
         for (int i = 1; i < clips.length; i++) {
-            int lastIdx = videoClips.size() - 1;
-            VideoClip lastElement = videoClips.get(lastIdx);
-            if (lastElement.getStartTime() == clips[i].getStartTime()) {
-                videoClips.set(lastIdx, clips[i]);
-            } else if (clips[i].getEndTime() > lastElement.getEndTime()) {
-                videoClips.add(clips[i]);
-            }
-        }
-
-        if (videoClips.get(videoClips.size() - 1).getEndTime() - videoClips.get(0).getStartTime() < time) {
-            return -1;
-        }
-
-        int curStart = 0;
-        int curEnd = 0;
-
-        for (int i = 0; i < videoClips.size(); i++) {
-            VideoClip clip = videoClips.get(i);
-            // 앞의 클립과 이어질 수 없는 경우
-            if (clip.getStartTime() > curEnd) {
+            VideoClip clip = clips[i];
+            // 1. 이전 클립과 연결이 안 되는 경우
+            if (clip.getStartTime() > prev.getEndTime()) {
                 return -1;
             }
 
-            curEnd = clip.getEndTime();
-            int curTime = curEnd - curStart;
-            if (curTime >= time) {
-                return i + 1;
+            // 3. 이전 클립에 포함되는 경우
+            if (clip.getEndTime() <= prev.getEndTime()) {
+                continue;
             }
+
+            // 이전 클립을 세분화시켜서 보관
+            answer++;
+            if (clip.getEndTime() >= time) {
+                return answer;
+            }
+            prev = new VideoClip(prev.getEndTime(), clip.getEndTime());
         }
         return -1;
     }
@@ -67,17 +58,17 @@ public class CodingMan {
 
         int count = CodingMan.findMinClipsCount(clips, airTime);
 
-        System.out.println(1); // 1
+        System.out.println(count); // 1
 
         clips = new VideoClip[]{
                 new VideoClip(30, 60),
                 new VideoClip(0, 20)
         };
-        airTime = 60;
+        airTime = 40;
 
         count = CodingMan.findMinClipsCount(clips, airTime);
 
-        System.out.println(-1); // -1
+        System.out.println(count); // -1
 
         clips = new VideoClip[]{
                 new VideoClip(0, 5),
@@ -91,7 +82,7 @@ public class CodingMan {
 
         count = CodingMan.findMinClipsCount(clips, airTime);
 
-        System.out.println(4); // 4
+        System.out.println(count); // 4
 
     }
 }
