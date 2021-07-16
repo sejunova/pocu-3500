@@ -20,6 +20,10 @@ public class CodingMan {
             return Integer.compare(v0.getEndTime(), v1.getEndTime());
         });
 
+        if (clips[0].getStartTime() != 0) {
+            return -1;
+        }
+
         ArrayList<VideoClip> videoClips = new ArrayList<>(clips.length);
         videoClips.add(clips[0]);
         for (int i = 1; i < clips.length; i++) {
@@ -36,57 +40,58 @@ public class CodingMan {
             return -1;
         }
 
-        int answer = Integer.MAX_VALUE;
         int curStart = 0;
         int curEnd = 0;
-
-        int startClipIdx = 0;
-        boolean foundClips = false;
 
         for (int i = 0; i < videoClips.size(); i++) {
             VideoClip clip = videoClips.get(i);
             // 앞의 클립과 이어질 수 없는 경우
             if (clip.getStartTime() > curEnd) {
-                curStart = clip.getStartTime();
-                startClipIdx = i;
-            }
-
-            if (clip.getEndTime() <= curEnd) {
-                continue;
+                return -1;
             }
 
             curEnd = clip.getEndTime();
-
             int curTime = curEnd - curStart;
             if (curTime >= time) {
-                if (startClipIdx == i) {
-                    return 1;
-                }
-                foundClips = true;
-                while (startClipIdx < i && curTime >= time) {
-                    answer = Math.min(answer, i - startClipIdx + 1);
-                    startClipIdx++;
-                    curStart = videoClips.get(startClipIdx).getStartTime();
-                    curTime = curEnd - curStart;
-                }
+                return i + 1;
             }
         }
-        return (foundClips) ? answer : - 1;
+        return -1;
     }
 
     public static void main(String[] args) {
         VideoClip[] clips = new VideoClip[]{
-                new VideoClip(0, 20),
-                new VideoClip(15, 30),
-                new VideoClip(50, 90),
-                new VideoClip(100, 101),
-
+                new VideoClip(0, 10),
         };
+        int airTime = 10;
 
-        int count = CodingMan.findMinClipsCount(clips, 30);
-        System.out.println(count);
-        count = CodingMan.findMinClipsCount(clips, 31);
-        System.out.println(count);
+        int count = CodingMan.findMinClipsCount(clips, airTime);
+
+        System.out.println(1); // 1
+
+        clips = new VideoClip[]{
+                new VideoClip(30, 60),
+                new VideoClip(0, 20)
+        };
+        airTime = 60;
+
+        count = CodingMan.findMinClipsCount(clips, airTime);
+
+        System.out.println(-1); // -1
+
+        clips = new VideoClip[]{
+                new VideoClip(0, 5),
+                new VideoClip(0, 20),
+                new VideoClip(5, 30),
+                new VideoClip(25, 35),
+                new VideoClip(35, 70),
+                new VideoClip(50, 75)
+        };
+        airTime = 60;
+
+        count = CodingMan.findMinClipsCount(clips, airTime);
+
+        System.out.println(4); // 4
 
     }
 }
