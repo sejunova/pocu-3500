@@ -22,7 +22,11 @@ public class Project {
         List<Task> sorted = sortTopology(taskList);
         List<Task> transposed = getTranspose(taskList);
 //        List<Task> transposedSorted = sortTopology(transposed);
-        Map<String, String> sccs = getSccs(transposed, sorted);
+        Map<String, Task> orgTaskMap = new HashMap<>();
+        for (Task task: taskList) {
+            orgTaskMap.put(task.getTitle(), task);
+        }
+        Map<String, String> sccs = getSccs(transposed, sorted, orgTaskMap);
 
 
         Map<String, Task> sccsGraph = new HashMap<>();
@@ -72,7 +76,7 @@ public class Project {
         return answer;
     }
 
-    private static Map<String, String> getSccs(List<Task> transposed, List<Task> sortedTasks) {
+    private static Map<String, String> getSccs(List<Task> transposed, List<Task> sortedTasks, Map<String, Task> orgTaskMap) {
         Map<String, Task> transposedMap = new HashMap<>();
         for (Task task: transposed) {
             transposedMap.put(task.getTitle(), task);
@@ -88,29 +92,21 @@ public class Project {
             dfs(task, visited, stack);
             if (stack.size() != 1) {
                 StringJoiner joiner = new StringJoiner(",");
-                for (int j = 0; j < stack.size(); j++) {
-                    if (stack.get(j).getPredecessors().size() >= 2)  {
-                        int k = j;
-                        entryKey = stack.get(j).getTitle();
-                        if (entryKey.equals("L")) {
-                            int x = 0;
-                        }
-                        for (int l = 0; l < stack.size(); l++) {
-                            joiner.add(stack.get(k).getTitle());
-                            if (k != j) {
-                                String t = stack.get(k).getTitle();
-                                assert !t.equals(entryKey);
-                                sccs.put(t, null);
-                            }
 
-                            k--;
-                            if (k < 0) {
-                                k = stack.size() + k;
-                            }
-                        }
-                        break;
+                int k = getEntryIdx(stack, orgTaskMap);
+                entryKey = stack.get(k).getTitle();
+                for (int l = 0; l < stack.size(); l++) {
+                    joiner.add(stack.get(k).getTitle());
+                    if (l != 0) {
+                        String t = stack.get(k).getTitle();
+                        assert !t.equals(entryKey);
+                        sccs.put(t, null);
                     }
 
+                    k--;
+                    if (k < 0) {
+                        k = stack.size() + k;
+                    }
                 }
                 sccs.put(entryKey, joiner.toString());
 
@@ -118,6 +114,22 @@ public class Project {
             i += stack.size();
         }
         return sccs;
+    }
+
+    private static int getEntryIdx(List<Task> stack,  Map<String, Task> orgTaskMap) {
+        Set<String> titles = new HashSet<>();
+        for (Task task: stack) {
+            titles.add(task.getTitle());
+        }
+        for (int i = 0; i < stack.size(); i++) {
+            String title = stack.get(i).getTitle();
+            for (Task t: orgTaskMap.get(title).getPredecessors()) {
+                if (!titles.contains(t.getTitle())) {
+                    return i;
+                }
+            }
+        }
+        throw new RuntimeException("should not come here");
     }
 
     private static Set<String> getMaintenanceJobs(List<Task> tasks, List<Task> sortedTasks) {
