@@ -5,19 +5,20 @@ import academy.pocu.comp3500.lab10.project.Task;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 public class Project {
     public static List<String> findSchedule(final Task[] tasks, final boolean includeMaintenance) {
-        List<Task> sorted = sortTopology(tasks);
+        List<Task> sorted = sortTopologically(tasks);
         List<Task> transposed = getTranspose(tasks);
 
         List<String> answer = new ArrayList<>();
         if (includeMaintenance) {
-            List<Task> transposedSorted = sortTopology(transposed.toArray(Task[]::new));
-            for (Task t: transposedSorted) {
+            List<Task> transposedSorted = sortTopologically(transposed.toArray(Task[]::new));
+            for (Task t : transposedSorted) {
                 answer.add(t.getTitle());
             }
         } else {
@@ -56,20 +57,6 @@ public class Project {
         return sccs;
     }
 
-    private static List<Task> sortTopology(Task[] tasks) {
-        List<Task> stack = new ArrayList<>(tasks.length);
-        Set<Task> visited = new HashSet<>(tasks.length);
-
-        for (Task task : tasks) {
-            dfs(task, visited, stack);
-        }
-        List<Task> ret = new ArrayList<>(stack.size());
-        for (int i = stack.size() - 1; i >= 0; i--) {
-            ret.add(stack.get(i));
-        }
-        return ret;
-    }
-
     private static void dfs(Task task, Set<Task> visited, List<Task> stack) {
         if (!visited.contains(task)) {
             visited.add(task);
@@ -102,4 +89,38 @@ public class Project {
 
         return new ArrayList<>(transposedTasks.values());
     }
+
+    private static LinkedList<Task> sortTopologically(Task[] tasks) {
+        HashSet<Task> discovered = new HashSet<>();
+        LinkedList<Task> sortedList = new LinkedList<>();
+
+        for (Task task : tasks) {
+            if (discovered.contains(task)) {
+                continue;
+            }
+
+            topologicalSortRecursive(task,
+                    discovered,
+                    sortedList);
+        }
+
+        return sortedList;
+    }
+
+    private static void topologicalSortRecursive(Task task, HashSet<Task> discovered, LinkedList<Task> linkedList) {
+        discovered.add(task);
+
+        for (Task nextCourse : task.getPredecessors()) {
+            if (discovered.contains(nextCourse)) {
+                continue;
+            }
+
+            topologicalSortRecursive(nextCourse,
+                    discovered,
+                    linkedList);
+        }
+
+        linkedList.addFirst(task);
+    }
+
 }
