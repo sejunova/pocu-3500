@@ -14,20 +14,60 @@ import java.util.stream.Collectors;
 public class Project {
     public static List<String> findSchedule(final Task[] tasks, final boolean includeMaintenance) {
         List<Task> taskList = new ArrayList<>(Arrays.asList(tasks));
-        List<Task> transPosed = getTranspose(taskList);
-        List<Task> sorted = sortTopology(transPosed);
+        List<Task> sorted = sortTopology(taskList);
+        List<Task> transposed = getTranspose(taskList);
+        List<Task> transposedSorted = sortTopology(transposed);
         if (includeMaintenance) {
-            return sorted
+            Map<String, List<String>> sccs = getSccs(transposed, sorted);
+            List<String> answer = new ArrayList<>();
+            Set<String> visited = new HashSet<>();
+            for (Task task: transposedSorted) {
+                String title = task.getTitle();
+                if (visited.contains(title)) {
+                    continue;
+                }
+                if (!sccs.containsKey(title)) {
+                    answer.add(title);
+                    visited.add(title);
+                } else {
+                    List<String> titles = sccs.get(title);
+                    for (int i = titles.size() - 1; i >= 0; i--) {
+                        String t = titles.get(i);
+                        if (visited.contains(t)) {
+                            continue;
+                        }
+                        answer.add(t);
+                        visited.add(t);
+                    }
+                }
+            }
+            return answer;
+        } else {
+            Set<String> maintenanceJobs = getMaintenanceJobs(taskList, transposedSorted);
+            return transposedSorted
                     .stream()
                     .map(Task::getTitle)
+                    .filter(x -> !maintenanceJobs.contains(x))
                     .collect(Collectors.toCollection(ArrayList::new));
+
         }
-        Set<String> maintenanceJobs = getMaintenanceJobs(taskList, sorted);
-        return sorted
-                .stream()
-                .map(Task::getTitle)
-                .filter(x -> !maintenanceJobs.contains(x))
-                .collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    private static Map<String, List<String>> getSccs(List<Task> tasks, List<Task> sortedTasks) {
+        Map<String, List<String>> sccs = new HashMap<>();
+        int i = 0;
+        Set<String> visited = new HashSet<>(tasks.size());
+        while (i < sortedTasks.size()) {
+            List<Task> stack = new ArrayList<>();
+            final String key = sortedTasks.get(i).getTitle();
+            Task task = tasks.stream().filter(x -> x.getTitle().equals(key)).findFirst().get();
+            dfs(task, visited, stack);
+            if (stack.size() != 1) {
+                sccs.put(key, stack.stream().map(Task::getTitle).collect(Collectors.toCollection(ArrayList::new)));
+            }
+            i += stack.size();
+        }
+        return sccs;
     }
 
     private static Set<String> getMaintenanceJobs(List<Task> tasks, List<Task> sortedTasks) {
