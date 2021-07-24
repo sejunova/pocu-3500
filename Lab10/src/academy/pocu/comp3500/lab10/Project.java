@@ -162,15 +162,12 @@ public class Project {
 
     private static void dfs(Task task, Set<String> visited, List<Task> stack) {
         if (!visited.contains(task.getTitle())) {
+            visited.add(task.getTitle());
             dfsRecursive(task, visited, stack);
         }
     }
 
     private static void dfsRecursive(Task task, Set<String> visited, List<Task> stack) {
-        if (task.getTitle().equals("K")) {
-            int x = 0;
-        }
-        visited.add(task.getTitle());
         for (Task child : task.getPredecessors()) {
             if (!visited.contains(child.getTitle())) {
                 visited.add(child.getTitle());
