@@ -57,7 +57,7 @@ public class Project {
 
         Map<String, String> sccs = new HashMap<>(transposed.size());
         int i = 0;
-        Set<String> visited = new HashSet<>(transposed.size());
+        Set<Task> visited = new HashSet<>(transposed.size());
         while (i < sortedTasks.size()) {
             List<Task> stack = new ArrayList<>();
             String entryKey = sortedTasks.get(i).getTitle();
@@ -97,7 +97,7 @@ public class Project {
 
         Set<String> sccs = new HashSet<>();
         int i = 0;
-        Set<String> visited = new HashSet<>(transposed.size());
+        Set<Task> visited = new HashSet<>(transposed.size());
         while (i < sortedTasks.size()) {
             List<Task> stack = new ArrayList<>();
             String entryKey = sortedTasks.get(i).getTitle();
@@ -132,7 +132,7 @@ public class Project {
     private static Set<String> getMaintenanceJobs(List<Task> tasks, List<Task> sortedTasks) {
         Set<String> maintenanceJobs = new HashSet<>();
         int i = 0;
-        Set<String> visited = new HashSet<>(tasks.size());
+        Set<Task> visited = new HashSet<>(tasks.size());
         while (i < sortedTasks.size()) {
             List<Task> stack = new ArrayList<>();
             final String key = sortedTasks.get(i).getTitle();
@@ -148,7 +148,7 @@ public class Project {
 
     private static List<Task> sortTopology(Task[] tasks) {
         List<Task> stack = new ArrayList<>(tasks.length);
-        Set<String> visited = new HashSet<>(tasks.length);
+        Set<Task> visited = new HashSet<>(tasks.length);
 
         for (Task task : tasks) {
             dfs(task, visited, stack);
@@ -160,17 +160,17 @@ public class Project {
         return ret;
     }
 
-    private static void dfs(Task task, Set<String> visited, List<Task> stack) {
-        if (!visited.contains(task.getTitle())) {
-            visited.add(task.getTitle());
+    private static void dfs(Task task, Set<Task> visited, List<Task> stack) {
+        if (!visited.contains(task)) {
+            visited.add(task);
             dfsRecursive(task, visited, stack);
         }
     }
 
-    private static void dfsRecursive(Task task, Set<String> visited, List<Task> stack) {
+    private static void dfsRecursive(Task task, Set<Task> visited, List<Task> stack) {
         for (Task child : task.getPredecessors()) {
-            if (!visited.contains(child.getTitle())) {
-                visited.add(child.getTitle());
+            if (!visited.contains(child)) {
+                visited.add(child);
                 dfsRecursive(child, visited, stack);
             }
         }
