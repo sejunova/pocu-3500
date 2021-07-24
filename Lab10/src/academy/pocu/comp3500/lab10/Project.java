@@ -35,7 +35,6 @@ public class Project {
             }
         }
 
-        Set<String> checked = new HashSet<>();
         for (Task task: transposed) {
             String t = task.getTitle();
             if (!sccsGraph.containsKey(t)) {
@@ -84,25 +83,36 @@ public class Project {
         Set<String> visited = new HashSet<>(transposed.size());
         while (i < sortedTasks.size()) {
             List<Task> stack = new ArrayList<>();
-            final String key = sortedTasks.get(i).getTitle();
-            Task task = transposedMap.get(key);
+            String entryKey = sortedTasks.get(i).getTitle();
+            Task task = transposedMap.get(entryKey);
             dfs(task, visited, stack);
             if (stack.size() != 1) {
-//                Task entry;
-//                for (int j = 0; j < stack.size(); j++) {
-//                    if (stack.get(j).getPredecessors())
-//
-//                }
                 StringJoiner joiner = new StringJoiner(",");
-                for (int j = stack.size() - 1; j >= 0; j--) {
-                    joiner.add(stack.get(j).getTitle());
+                for (int j = 0; j < stack.size(); j++) {
+                    if (stack.get(j).getPredecessors().size() >= 2)  {
+                        int k = j;
+                        entryKey = stack.get(j).getTitle();
+                        if (entryKey.equals("L")) {
+                            int x = 0;
+                        }
+                        for (int l = 0; l < stack.size(); l++) {
+                            joiner.add(stack.get(k).getTitle());
+                            if (k != j) {
+                                String t = stack.get(k).getTitle();
+                                assert !t.equals(entryKey);
+                                sccs.put(t, null);
+                            }
+
+                            k--;
+                            if (k < 0) {
+                                k = stack.size() + k;
+                            }
+                        }
+                        break;
+                    }
+
                 }
-                for (int j = 0; j < stack.size() - 1; j++) {
-                    String t = stack.get(j).getTitle();
-                    assert !t.equals(key);
-                    sccs.put(t, null);
-                }
-                sccs.put(key, joiner.toString());
+                sccs.put(entryKey, joiner.toString());
 
             }
             i += stack.size();
