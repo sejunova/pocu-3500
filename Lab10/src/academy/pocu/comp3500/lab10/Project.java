@@ -5,7 +5,6 @@ import academy.pocu.comp3500.lab10.project.Task;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -15,7 +14,7 @@ import java.util.stream.Collectors;
 public class Project {
     public static List<String> findSchedule(final Task[] tasks, final boolean includeMaintenance) {
         List<Task> taskList = new ArrayList<>(tasks.length);
-        for (Task task: tasks) {
+        for (Task task : tasks) {
             taskList.add(task);
         }
 
@@ -23,14 +22,14 @@ public class Project {
         List<Task> transposed = getTranspose(taskList);
 //        List<Task> transposedSorted = sortTopology(transposed);
         Map<String, Task> orgTaskMap = new HashMap<>();
-        for (Task task: taskList) {
+        for (Task task : taskList) {
             orgTaskMap.put(task.getTitle(), task);
         }
         Map<String, String> sccs = getSccs(transposed, sorted, orgTaskMap);
 
 
         Map<String, Task> sccsGraph = new HashMap<>();
-        for (Task task: transposed) {
+        for (Task task : transposed) {
             String t = task.getTitle();
             if (!sccs.containsKey(task.getTitle())) {
                 sccsGraph.put(task.getTitle(), new Task(t, 0));
@@ -39,13 +38,13 @@ public class Project {
             }
         }
 
-        for (Task task: transposed) {
+        for (Task task : transposed) {
             String t = task.getTitle();
             if (!sccsGraph.containsKey(t)) {
                 continue;
             }
             Task newTask = sccsGraph.get(t);
-            for (Task next: task.getPredecessors()) {
+            for (Task next : task.getPredecessors()) {
                 if (sccsGraph.containsKey(next.getTitle())) {
                     newTask.addPredecessor(sccsGraph.get(next.getTitle()));
                 }
@@ -54,19 +53,19 @@ public class Project {
         List<Task> sccSorted = sortTopology(new ArrayList<>(sccsGraph.values()));
         List<String> answer = new ArrayList<>();
         if (includeMaintenance) {
-            for (Task task: sccSorted) {
+            for (Task task : sccSorted) {
                 String t = task.getTitle();
                 if (!t.contains(",")) {
                     answer.add(t);
                 } else {
                     String[] scc = t.split(",");
-                    for (String s: scc) {
+                    for (String s : scc) {
                         answer.add(s);
                     }
                 }
             }
         } else {
-            for (Task task: sccSorted) {
+            for (Task task : sccSorted) {
                 String t = task.getTitle();
                 if (!t.contains(",")) {
                     answer.add(t);
@@ -78,7 +77,7 @@ public class Project {
 
     private static Map<String, String> getSccs(List<Task> transposed, List<Task> sortedTasks, Map<String, Task> orgTaskMap) {
         Map<String, Task> transposedMap = new HashMap<>();
-        for (Task task: transposed) {
+        for (Task task : transposed) {
             transposedMap.put(task.getTitle(), task);
         }
 
@@ -116,14 +115,14 @@ public class Project {
         return sccs;
     }
 
-    private static int getEntryIdx(List<Task> stack,  Map<String, Task> orgTaskMap) {
+    private static int getEntryIdx(List<Task> stack, Map<String, Task> orgTaskMap) {
         Set<String> titles = new HashSet<>();
-        for (Task task: stack) {
+        for (Task task : stack) {
             titles.add(task.getTitle());
         }
         for (int i = 0; i < stack.size(); i++) {
             String title = stack.get(i).getTitle();
-            for (Task t: orgTaskMap.get(title).getPredecessors()) {
+            for (Task t : orgTaskMap.get(title).getPredecessors()) {
                 if (!titles.contains(t.getTitle())) {
                     return i;
                 }
@@ -153,7 +152,7 @@ public class Project {
         List<Task> stack = new ArrayList<>(tasks.size());
         Set<String> visited = new HashSet<>(tasks.size());
 
-        for (Task task: tasks) {
+        for (Task task : tasks) {
             dfs(task, visited, stack);
         }
         List<Task> ret = new ArrayList<>(stack.size());
@@ -185,12 +184,12 @@ public class Project {
 
     private static List<Task> getTranspose(List<Task> tasks) {
         Map<String, Task> transposedTasks = new HashMap<>(tasks.size());
-        for (Task task: tasks) {
+        for (Task task : tasks) {
             transposedTasks.put(task.getTitle(), new Task(task.getTitle(), task.getEstimate()));
         }
 
-        for (Task task: tasks) {
-            for (Task predecessor: task.getPredecessors()) {
+        for (Task task : tasks) {
+            for (Task predecessor : task.getPredecessors()) {
                 transposedTasks.get(predecessor.getTitle())
                         .addPredecessor(transposedTasks.get(task.getTitle()));
             }
