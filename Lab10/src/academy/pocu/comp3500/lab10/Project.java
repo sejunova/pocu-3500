@@ -22,25 +22,25 @@ public class Project {
                     .map(Task::getTitle)
                     .collect(Collectors.toCollection(ArrayList::new));
         }
-        Set<Task> maintenanceJobs = getMaintenanceJobs(taskList, sorted);
+        Set<String> maintenanceJobs = getMaintenanceJobs(taskList, sorted);
         return sorted
                 .stream()
-                .filter(x -> !maintenanceJobs.contains(x))
                 .map(Task::getTitle)
+                .filter(x -> !maintenanceJobs.contains(x))
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    private static Set<Task> getMaintenanceJobs(List<Task> tasks, List<Task> sortedTasks) {
-        Set<Task> maintenanceJobs = new HashSet<>();
+    private static Set<String> getMaintenanceJobs(List<Task> tasks, List<Task> sortedTasks) {
+        Set<String> maintenanceJobs = new HashSet<>();
         int i = 0;
-        Set<Task> visited = new HashSet<>(tasks.size());
+        Set<String> visited = new HashSet<>(tasks.size());
         while (i < sortedTasks.size()) {
             List<Task> stack = new ArrayList<>();
-            Task task = sortedTasks.get(i);
-            Checker checker = new Checker(task, false);
-            dfs(task, visited, stack, checker);
-            if (checker.isCycle) {
-                maintenanceJobs.addAll(stack);
+            final String key = sortedTasks.get(i).getTitle();
+            Task task = tasks.stream().filter(x -> x.getTitle().equals(key)).findFirst().get();
+            dfs(task, visited, stack);
+            if (stack.size() != 1) {
+                maintenanceJobs.addAll(stack.stream().map(Task::getTitle).collect(Collectors.toCollection(ArrayList::new)));
             }
             i += stack.size();
         }
@@ -49,10 +49,10 @@ public class Project {
 
     private static List<Task> sortTopology(List<Task> tasks) {
         List<Task> stack = new ArrayList<>(tasks.size());
-        Set<Task> visited = new HashSet<>(tasks.size());
+        Set<String> visited = new HashSet<>(tasks.size());
 
         for (Task task: tasks) {
-            dfs(task, visited, stack, new Checker(task, false));
+            dfs(task, visited, stack);
         }
         List<Task> ret = new ArrayList<>(stack.size());
         for (int i = stack.size() - 1; i >= 0; i--) {
@@ -61,21 +61,18 @@ public class Project {
         return ret;
     }
 
-    private static void dfs(Task task, Set<Task> visited, List<Task> stack, Checker checker) {
-        if (!visited.contains(task)) {
-            dfsRecursive(task, visited, stack, checker);
+    private static void dfs(Task task, Set<String> visited, List<Task> stack) {
+        if (!visited.contains(task.getTitle())) {
+            dfsRecursive(task, visited, stack);
         }
     }
 
-    private static void dfsRecursive(Task task, Set<Task> visited, List<Task> stack, Checker checker) {
-        visited.add(task);
+    private static void dfsRecursive(Task task, Set<String> visited, List<Task> stack) {
+        visited.add(task.getTitle());
         for (Task child : task.getPredecessors()) {
-            if (!visited.contains(child)) {
-                visited.add(child);
-                if (checker.task == child) {
-                    checker.isCycle = true;
-                }
-                dfsRecursive(child, visited, stack, checker);
+            if (!visited.contains(child.getTitle())) {
+                visited.add(child.getTitle());
+                dfsRecursive(child, visited, stack);
             }
         }
         stack.add(task);
@@ -96,17 +93,6 @@ public class Project {
 
         return new ArrayList<>(transposedTasks.values());
     }
-
-    private static class Checker {
-        private Task task;
-        private boolean isCycle;
-
-        public Checker(Task task, boolean isCycle) {
-            this.task = task;
-            this.isCycle = isCycle;
-        }
-    }
-
 //    public static void main(String[] args) {
 //        Task a = new Task("A", 12);
 //        Task b = new Task("B", 7);
