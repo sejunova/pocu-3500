@@ -3,67 +3,107 @@ package academy.pocu.comp3500.lab10;
 import academy.pocu.comp3500.lab10.project.Task;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 public class Project {
     public static List<String> findSchedule(final Task[] tasks, final boolean includeMaintenance) {
-        List<Task> taskList = new ArrayList<>(Arrays.asList(tasks));
+        List<Task> taskList = new ArrayList<>(tasks.length);
+        for (Task task: tasks) {
+            taskList.add(task);
+        }
+
         List<Task> sorted = sortTopology(taskList);
         List<Task> transposed = getTranspose(taskList);
-        List<Task> transposedSorted = sortTopology(transposed);
-        if (includeMaintenance) {
-            Map<String, List<String>> sccs = getSccs(transposed, sorted);
-            List<String> answer = new ArrayList<>();
-            Set<String> visited = new HashSet<>();
-            for (Task task: transposedSorted) {
-                String title = task.getTitle();
-                if (visited.contains(title)) {
-                    continue;
+//        List<Task> transposedSorted = sortTopology(transposed);
+        Map<String, String> sccs = getSccs(transposed, sorted);
+
+
+        Map<String, Task> sccsGraph = new HashMap<>();
+        for (Task task: transposed) {
+            String t = task.getTitle();
+            if (!sccs.containsKey(task.getTitle())) {
+                sccsGraph.put(task.getTitle(), new Task(t, 0));
+            } else if (sccs.get(task.getTitle()) != null) {
+                sccsGraph.put(task.getTitle(), new Task(sccs.get(t), 0));
+            }
+        }
+
+        Set<String> checked = new HashSet<>();
+        for (Task task: transposed) {
+            String t = task.getTitle();
+            if (!sccsGraph.containsKey(t)) {
+                continue;
+            }
+            Task newTask = sccsGraph.get(t);
+            for (Task next: task.getPredecessors()) {
+                if (sccsGraph.containsKey(next.getTitle())) {
+                    newTask.addPredecessor(sccsGraph.get(next.getTitle()));
                 }
-                if (!sccs.containsKey(title)) {
-                    answer.add(title);
-                    visited.add(title);
+            }
+        }
+        List<Task> sccSorted = sortTopology(new ArrayList<>(sccsGraph.values()));
+        List<String> answer = new ArrayList<>();
+        if (includeMaintenance) {
+            for (Task task: sccSorted) {
+                String t = task.getTitle();
+                if (!t.contains(",")) {
+                    answer.add(t);
                 } else {
-                    List<String> titles = sccs.get(title);
-                    for (int i = titles.size() - 1; i >= 0; i--) {
-                        String t = titles.get(i);
-                        if (visited.contains(t)) {
-                            continue;
-                        }
-                        answer.add(t);
-                        visited.add(t);
+                    String[] scc = t.split(",");
+                    for (String s: scc) {
+                        answer.add(s);
                     }
                 }
             }
-            return answer;
         } else {
-            Set<String> maintenanceJobs = getMaintenanceJobs(taskList, transposedSorted);
-            return transposedSorted
-                    .stream()
-                    .map(Task::getTitle)
-                    .filter(x -> !maintenanceJobs.contains(x))
-                    .collect(Collectors.toCollection(ArrayList::new));
-
+            for (Task task: sccSorted) {
+                String t = task.getTitle();
+                if (!t.contains(",")) {
+                    answer.add(t);
+                }
+            }
         }
+        return answer;
     }
 
-    private static Map<String, List<String>> getSccs(List<Task> tasks, List<Task> sortedTasks) {
-        Map<String, List<String>> sccs = new HashMap<>();
+    private static Map<String, String> getSccs(List<Task> transposed, List<Task> sortedTasks) {
+        Map<String, Task> transposedMap = new HashMap<>();
+        for (Task task: transposed) {
+            transposedMap.put(task.getTitle(), task);
+        }
+
+        Map<String, String> sccs = new HashMap<>();
         int i = 0;
-        Set<String> visited = new HashSet<>(tasks.size());
+        Set<String> visited = new HashSet<>(transposed.size());
         while (i < sortedTasks.size()) {
             List<Task> stack = new ArrayList<>();
             final String key = sortedTasks.get(i).getTitle();
-            Task task = tasks.stream().filter(x -> x.getTitle().equals(key)).findFirst().get();
+            Task task = transposedMap.get(key);
             dfs(task, visited, stack);
             if (stack.size() != 1) {
-                sccs.put(key, stack.stream().map(Task::getTitle).collect(Collectors.toCollection(ArrayList::new)));
+//                Task entry;
+//                for (int j = 0; j < stack.size(); j++) {
+//                    if (stack.get(j).getPredecessors())
+//
+//                }
+                StringJoiner joiner = new StringJoiner(",");
+                for (int j = stack.size() - 1; j >= 0; j--) {
+                    joiner.add(stack.get(j).getTitle());
+                }
+                for (int j = 0; j < stack.size() - 1; j++) {
+                    String t = stack.get(j).getTitle();
+                    assert !t.equals(key);
+                    sccs.put(t, null);
+                }
+                sccs.put(key, joiner.toString());
+
             }
             i += stack.size();
         }
@@ -108,6 +148,9 @@ public class Project {
     }
 
     private static void dfsRecursive(Task task, Set<String> visited, List<Task> stack) {
+        if (task.getTitle().equals("K")) {
+            int x = 0;
+        }
         visited.add(task.getTitle());
         for (Task child : task.getPredecessors()) {
             if (!visited.contains(child.getTitle())) {
@@ -133,29 +176,38 @@ public class Project {
 
         return new ArrayList<>(transposedTasks.values());
     }
-//    public static void main(String[] args) {
-//        Task a = new Task("A", 12);
-//        Task b = new Task("B", 7);
-//        Task c = new Task("C", 10);
-//        Task d = new Task("D", 9);
-//        Task e = new Task("E", 8);
-//        Task f = new Task("F", 11);
-//        Task g = new Task("G", 14);
+
+//    private static LinkedList<Task> sortTopologically(ArrayList<Task> tasks) {
+//        HashSet<Task> discovered = new HashSet<>();
+//        LinkedList<Task> sortedList = new LinkedList<>();
 //
-//        b.addPredecessor(a);
-//        c.addPredecessor(b, e);
-//        d.addPredecessor(c);
-//        e.addPredecessor(d);
-//        f.addPredecessor(a);
-//        g.addPredecessor(b, f);
+//        for (Task task : tasks) {
+//            if (discovered.contains(task)) {
+//                continue;
+//            }
 //
-//        List<Task> tasks = new ArrayList<>(Arrays.asList(a, b, c, d, e, f, g));
+//            topologicalSortRecursive(task,
+//                    discovered,
+//                    sortedList);
+//        }
 //
-//        List<Task> sorted = sortTopology(getTranspose(tasks));
-//        int x = 0;
-//
-//
-//
-//
+//        return sortedList;
 //    }
+//
+//    private static void topologicalSortRecursive(Task task, HashSet<Task> discovered, LinkedList<Task> linkedList) {
+//        discovered.add(task);
+//
+//        for (Task nextCourse : task.getPredecessors()) {
+//            if (discovered.contains(nextCourse)) {
+//                continue;
+//            }
+//
+//            topologicalSortRecursive(nextCourse,
+//                    discovered,
+//                    linkedList);
+//        }
+//
+//        linkedList.addFirst(task);
+//    }
+
 }
