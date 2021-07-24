@@ -30,7 +30,7 @@ public class Project {
                 } else {
                     if (sccs.get(t) != null) {
                         String[] titles = sccs.get(t).split(",");
-                        for (String title: titles) {
+                        for (String title : titles) {
                             answer.add(title);
                         }
                     }
@@ -104,7 +104,7 @@ public class Project {
             Task task = transposedMap.get(entryKey);
             dfs(task, visited, stack);
             if (stack.size() != 1) {
-                for (Task t: stack) {
+                for (Task t : stack) {
                     sccs.add(t.getTitle());
                 }
             }
