@@ -13,16 +13,15 @@ import java.util.stream.Collectors;
 
 public class Project {
     public static List<String> findSchedule(final Task[] tasks, final boolean includeMaintenance) {
-        Map<String, Task> orgTaskMap = new HashMap<>();
-        for (Task task : tasks) {
-            orgTaskMap.put(task.getTitle(), task);
-        }
-
         List<Task> sorted = sortTopology(tasks);
         List<Task> transposed = getTranspose(tasks);
 
         List<String> answer = new ArrayList<>();
         if (includeMaintenance) {
+            Map<String, Task> orgTaskMap = new HashMap<>(tasks.length);
+            for (Task task : tasks) {
+                orgTaskMap.put(task.getTitle(), task);
+            }
             Map<String, String> sccs = getSccs(transposed, sorted, orgTaskMap);
             for (int i = sorted.size() - 1; i >= 0; i--) {
                 String t = sorted.get(i).getTitle();
@@ -51,12 +50,12 @@ public class Project {
     }
 
     private static Map<String, String> getSccs(List<Task> transposed, List<Task> sortedTasks, Map<String, Task> orgTaskMap) {
-        Map<String, Task> transposedMap = new HashMap<>();
+        Map<String, Task> transposedMap = new HashMap<>(transposed.size());
         for (Task task : transposed) {
             transposedMap.put(task.getTitle(), task);
         }
 
-        Map<String, String> sccs = new HashMap<>();
+        Map<String, String> sccs = new HashMap<>(transposed.size());
         int i = 0;
         Set<String> visited = new HashSet<>(transposed.size());
         while (i < sortedTasks.size()) {
@@ -115,7 +114,7 @@ public class Project {
     }
 
     private static int getEntryIdx(List<Task> stack, Map<String, Task> orgTaskMap) {
-        Set<String> titles = new HashSet<>();
+        Set<String> titles = new HashSet<>(stack.size());
         for (Task task : stack) {
             titles.add(task.getTitle());
         }
