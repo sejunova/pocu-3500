@@ -16,13 +16,19 @@ public class Project {
         List<Task> transposed = getTranspose(tasks);
 
         List<String> answer = new ArrayList<>();
+        List<String> sccList = getSccSet(transposed, sorted);
+        Set<String> sccSet = new HashSet<>(sccList);
         if (includeMaintenance) {
-            List<Task> transposedSorted = sortTopologically(transposed.toArray(Task[]::new));
-            for (Task t : transposedSorted) {
-                answer.add(t.getTitle());
+            for (int i = sorted.size() - 1; i >= 0; i--) {
+                String t = sorted.get(i).getTitle();
+                if (!sccSet.contains(t)) {
+                    answer.add(t);
+                }
+            }
+            for (String scc: sccList) {
+                answer.add(scc);
             }
         } else {
-            Set<String> sccSet = getSccSet(transposed, sorted);
             for (int i = sorted.size() - 1; i >= 0; i--) {
                 String t = sorted.get(i).getTitle();
                 if (!sccSet.contains(t)) {
@@ -33,41 +39,90 @@ public class Project {
         return answer;
     }
 
-    private static Set<String> getSccSet(List<Task> transposed, List<Task> sortedTasks) {
+//    private static Map<String, List<Task>> kosaraju(List<Task> transposed, List<Task> sortedTasks) {
+//        Map<String, Task> transposedMap = new HashMap<>();
+//        for (Task task : transposed) {
+//            transposedMap.put(task.getTitle(), task);
+//        }
+//
+//        Set<String> sccs = new HashSet<>();
+//        int i = 0;
+//        Set<Task> visited = new HashSet<>(transposed.size());
+//        while (i < sortedTasks.size()) {
+//            List<Task> stack = new ArrayList<>();
+//            String entryKey = sortedTasks.get(i).getTitle();
+//            Task task = transposedMap.get(entryKey);
+//            if (sortedTasks.get(i).)
+//            dfs(task, visited, stack);
+//            if (stack.size() != 1) {
+//                for (Task t : stack) {
+//                    sccs.add(t.getTitle());
+//                }
+//            }
+//            i += stack.size();
+//        }
+//        return sccs;
+//    }
+
+    private static List<String> getSccSet(List<Task> transposed, List<Task> sortedTasks) {
         Map<String, Task> transposedMap = new HashMap<>();
         for (Task task : transposed) {
             transposedMap.put(task.getTitle(), task);
         }
 
-        Set<String> sccs = new HashSet<>();
-        int i = 0;
-        Set<Task> visited = new HashSet<>(transposed.size());
-        while (i < sortedTasks.size()) {
+        Map<String, Task> sortedMap = new HashMap<>();
+        for (Task task : sortedTasks) {
+            sortedMap.put(task.getTitle(), task);
+        }
+
+        List<String> sccs = new ArrayList<>();
+        Set<String> visited = new HashSet<>(transposed.size());
+
+
+        for (Task sortedTask : sortedTasks) {
             List<Task> stack = new ArrayList<>();
-            String entryKey = sortedTasks.get(i).getTitle();
-            Task task = transposedMap.get(entryKey);
-            dfs(task, visited, stack);
-            if (stack.size() != 1) {
-                for (Task t : stack) {
-                    sccs.add(t.getTitle());
+            Task cur = transposedMap.get(sortedTask.getTitle());
+
+            dfs(cur, visited, stack);
+            if (stack.size() >= 2) {
+                Set<String> sccSet = new HashSet<>();
+                for (Task t: stack) {
+                    sccSet.add(t.getTitle());
+                }
+
+                Task entry = null;
+                outer:
+                for (Task ele : stack) {
+                    ele = sortedMap.get(ele.getTitle());
+                    for (Task predecessor : ele.getPredecessors()) {
+                        if (!sccSet.contains(predecessor.getTitle())) {
+                            entry = transposedMap.get(ele.getTitle());
+                            break outer;
+                        }
+                    }
+                }
+                stack.clear();
+                assert entry != null;
+                dfs(entry, new HashSet<>(), stack);
+                for (int k = stack.size() - 1; k >= 0; k--) {
+                    sccs.add(stack.get(k).getTitle());
                 }
             }
-            i += stack.size();
         }
         return sccs;
     }
 
-    private static void dfs(Task task, Set<Task> visited, List<Task> stack) {
-        if (!visited.contains(task)) {
-            visited.add(task);
+    private static void dfs(Task task, Set<String> visited, List<Task> stack) {
+        if (!visited.contains(task.getTitle())) {
+            visited.add(task.getTitle());
             dfsRecursive(task, visited, stack);
         }
     }
 
-    private static void dfsRecursive(Task task, Set<Task> visited, List<Task> stack) {
+    private static void dfsRecursive(Task task, Set<String> visited, List<Task> stack) {
         for (Task child : task.getPredecessors()) {
-            if (!visited.contains(child)) {
-                visited.add(child);
+            if (!visited.contains(child.getTitle())) {
+                visited.add(child.getTitle());
                 dfsRecursive(child, visited, stack);
             }
         }
