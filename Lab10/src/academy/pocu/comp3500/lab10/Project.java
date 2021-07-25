@@ -25,7 +25,7 @@ public class Project {
                     answer.add(t);
                 }
             }
-            for (String scc: sccList) {
+            for (String scc : sccList) {
                 answer.add(scc);
             }
         } else {
@@ -86,7 +86,7 @@ public class Project {
             dfs(cur, visited, stack);
             if (stack.size() >= 2) {
                 Set<String> sccSet = new HashSet<>();
-                for (Task t: stack) {
+                for (Task t : stack) {
                     sccSet.add(t.getTitle());
                 }
 
