@@ -40,7 +40,8 @@ public final class Project {
 
         assert mileStone != null;
         Map<Task, Integer> minDurationMap = new HashMap<>();
-        minDurationMap.put(mileStone, 0);
+        getMinDuration(mileStone, minDurationMap);
+        return minDurationMap.get(mileStone);
     }
 
     public int findMaxBonusCount(final String task) {
@@ -58,13 +59,20 @@ public final class Project {
     }
 
     private static void getMinDuration(Task task, Map<Task, Integer> minDurationMap) {
+        minDurationMap.put(task, task.getEstimate());
         for (Task child : task.getPredecessors()) {
             if (!minDurationMap.containsKey(child)) {
                 minDurationMap.put(child, 0);
-                getManMonthsRecursive(child, visited, manMonth);
+                getMinDuration(child, minDurationMap);
             }
         }
-        manMonth.val += task.getEstimate();
+        int minEstimationForTask = task.getEstimate();
+        for (Task child : task.getPredecessors()) {
+            if (minDurationMap.get(child) + task.getEstimate() > minEstimationForTask) {
+                minEstimationForTask = minDurationMap.get(child) + task.getEstimate();
+            }
+        }
+        minDurationMap.put(task, minEstimationForTask);
     }
 
     private static class ManMonth {
