@@ -2,9 +2,7 @@ package academy.pocu.comp3500.assignment4;
 
 import academy.pocu.comp3500.assignment4.project.Task;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public final class Project {
@@ -15,9 +13,6 @@ public final class Project {
     }
 
     public int findTotalManMonths(final String task) {
-        int manMonths = 0;
-        List<Task> tasksForMs = new ArrayList<>();
-        Map<String, Boolean> visited = new HashMap<>();
         Task mileStone = null;
         for (Task t : tasks) {
             if (t.getTitle().equals(task)) {
@@ -25,29 +20,54 @@ public final class Project {
                 break;
             }
         }
+
         assert mileStone != null;
-        dfsRecursive(mileStone, visited, tasksForMs);
-        for (Task t : tasksForMs) {
-            manMonths += t.getEstimate();
-        }
-        return manMonths;
+
+        ManMonth manMonth = new ManMonth();
+        Map<Task, Boolean> visited = new HashMap<>();
+        getManMonthsRecursive(mileStone, visited, manMonth);
+        return manMonth.val;
     }
 
     public int findMinDuration(final String task) {
-        return -1;
+        Task mileStone = null;
+        for (Task t : tasks) {
+            if (t.getTitle().equals(task)) {
+                mileStone = t;
+                break;
+            }
+        }
+
+        assert mileStone != null;
+        Map<Task, Integer> minDurationMap = new HashMap<>();
+        minDurationMap.put(mileStone, 0);
     }
 
     public int findMaxBonusCount(final String task) {
         return -1;
     }
 
-    private static void dfsRecursive(Task task, Map<String, Boolean> visited, List<Task> stack) {
+    private static void getManMonthsRecursive(Task task, Map<Task, Boolean> visited, ManMonth manMonth) {
         for (Task child : task.getPredecessors()) {
-            if (!visited.containsKey(child.getTitle())) {
-                visited.put(child.getTitle(), true);
-                dfsRecursive(child, visited, stack);
+            if (!visited.containsKey(child)) {
+                visited.put(child, true);
+                getManMonthsRecursive(child, visited, manMonth);
             }
         }
-        stack.add(task);
+        manMonth.val += task.getEstimate();
+    }
+
+    private static void getMinDuration(Task task, Map<Task, Integer> minDurationMap) {
+        for (Task child : task.getPredecessors()) {
+            if (!minDurationMap.containsKey(child)) {
+                minDurationMap.put(child, 0);
+                getManMonthsRecursive(child, visited, manMonth);
+            }
+        }
+        manMonth.val += task.getEstimate();
+    }
+
+    private static class ManMonth {
+        private int val = 0;
     }
 }
