@@ -95,14 +95,15 @@ public final class Project {
 //        nodeEdges.get(endNodeName).put(milestoneEndName, new Edge(endNodeName, milestoneEndName, 0);
 
         for (Task s : startNodes) {
-            boolean isFull = bfs(nodeEdges, s.getTitle(), endNodeName);
-            if (nodeEdges.get(milestoneEndName).get(endNodeName).flow == mileStone.getEstimate()) {
-                return mileStone.getEstimate();
+            while (true) {
+                boolean isFull = bfs(nodeEdges, s.getTitle(), endNodeName);
+                if (nodeEdges.get(milestoneEndName).get(endNodeName).flow == mileStone.getEstimate()) {
+                    return mileStone.getEstimate();
+                }
+                if (isFull) {
+                    break;
+                }
             }
-            if (isFull) {
-                break;
-            }
-
         }
         int answer = nodeEdges.get(milestoneEndName).get(endNodeName).flow;
         return answer;
