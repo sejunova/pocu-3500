@@ -63,13 +63,13 @@ public final class Project {
         getTasksForMilestoneRecursive(mileStone, visited, tasksForMilestone);
 
         List<Task> startNodes = new ArrayList<>();
-        for (Task t: tasksForMilestone) {
+        for (Task t : tasksForMilestone) {
             if (t.getPredecessors().isEmpty()) {
                 startNodes.add(t);
             }
         }
         Map<String, Map<String, Edge>> nodeEdges = new HashMap<>();
-        for (Task t: tasksForMilestone) {
+        for (Task t : tasksForMilestone) {
             String s = t.getTitle();
             String e = t.getTitle() + "'";
             // 임시노드와 연결
@@ -78,7 +78,7 @@ public final class Project {
             nodeEdges.get(s).put(e, new Edge(s, e, Integer.MAX_VALUE));
         }
 
-        for (Task t: tasksForMilestone) {
+        for (Task t : tasksForMilestone) {
             String e = t.getTitle();
             for (Task p : t.getPredecessors()) {
                 String s = p.getTitle() + "'";
@@ -94,7 +94,7 @@ public final class Project {
         nodeEdges.get(milestoneEndName).put(endNodeName, new Edge(milestoneEndName, endNodeName, mileStone.getEstimate()));
 //        nodeEdges.get(endNodeName).put(milestoneEndName, new Edge(endNodeName, milestoneEndName, 0);
 
-        for (Task s: startNodes) {
+        for (Task s : startNodes) {
             boolean isFull = bfs(nodeEdges, s.getTitle(), endNodeName);
             if (nodeEdges.get(milestoneEndName).get(endNodeName).flow == mileStone.getEstimate()) {
                 return mileStone.getEstimate();
@@ -152,7 +152,7 @@ public final class Project {
     private static boolean bfs(Map<String, Map<String, Edge>> nodeEdges, String start, String end) {
         LinkedList<String> queue = new LinkedList<>();
         Map<String, String> visitedBy = new HashMap<>();
-        for (String node: nodeEdges.keySet()) {
+        for (String node : nodeEdges.keySet()) {
             visitedBy.put(node, null);
         }
 
@@ -176,7 +176,7 @@ public final class Project {
 
                     to = from;
                 }
-                for (Edge e: paths) {
+                for (Edge e : paths) {
                     e.flow += minFlowAvailable;
                     Edge reverse = nodeEdges.get(e.end).get(e.start);
                     if (reverse != null) {
@@ -186,7 +186,7 @@ public final class Project {
                 return false;
             }
 
-            for (Edge e: nodeEdges.get(node).values()) {
+            for (Edge e : nodeEdges.get(node).values()) {
                 if (e.end.equals(node)) {
                     continue;
                 }
@@ -198,12 +198,11 @@ public final class Project {
                 }
 
                 visitedBy.put(e.end, node);
-                queue.addFirst(e.end);
+                queue.addLast(e.end);
             }
         }
         return true;
     }
-
 
 
     private static class Edge {
