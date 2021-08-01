@@ -75,29 +75,23 @@ public final class Project {
             // 임시노드와 연결
             nodeEdges.put(s, new HashMap<>());
             nodeEdges.put(e, new HashMap<>());
-            nodeEdges.get(s).put(e, new Edge(s, e, Integer.MAX_VALUE));
+            nodeEdges.get(s).put(e, new Edge(s, e, t.getEstimate()));
         }
 
         for (Task t : tasksForMilestone) {
             String e = t.getTitle();
             for (Task p : t.getPredecessors()) {
                 String s = p.getTitle() + "'";
-                // 정방향 엣지 생성
-                nodeEdges.get(s).put(e, new Edge(s, e, p.getEstimate()));
-                // 역방향 엣지 생성
+                nodeEdges.get(s).put(e, new Edge(s, e, Math.min(p.getEstimate(), t.getEstimate())));
                 nodeEdges.get(e).put(s, new Edge(e, s, 0));
             }
         }
-        String endNodeName = "END_NODE";
-        String milestoneEndName = mileStone.getTitle() + "'";
-        nodeEdges.put(endNodeName, new HashMap<>());
-        nodeEdges.get(milestoneEndName).put(endNodeName, new Edge(milestoneEndName, endNodeName, mileStone.getEstimate()));
-//        nodeEdges.get(endNodeName).put(milestoneEndName, new Edge(endNodeName, milestoneEndName, 0);
 
+        String endNodeName = mileStone.getTitle();
         for (Task s : startNodes) {
             while (true) {
-                boolean isFull = bfs(nodeEdges, s.getTitle(), endNodeName);
-                if (nodeEdges.get(milestoneEndName).get(endNodeName).flow == mileStone.getEstimate()) {
+                boolean isFull = bfs(nodeEdges, s.getTitle(), endNodeName + "'");
+                if (nodeEdges.get(endNodeName).get(endNodeName + "'").flow == mileStone.getEstimate()) {
                     return mileStone.getEstimate();
                 }
                 if (isFull) {
@@ -105,7 +99,7 @@ public final class Project {
                 }
             }
         }
-        int answer = nodeEdges.get(milestoneEndName).get(endNodeName).flow;
+        int answer = nodeEdges.get(endNodeName).get(endNodeName + "'").flow;
         return answer;
     }
 
